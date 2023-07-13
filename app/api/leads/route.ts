@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   try {
 
     const session = await getServerSession(authOptions)
