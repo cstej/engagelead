@@ -12,7 +12,7 @@ const createUserSchema = z.object({
   password: z.string().min(8),
 })
 
-export async function userRegistration(req: NextRequest) {
+ async function userRegistration(req: NextRequest) {
   try {
 
     const userData = createUserSchema.parse(await req.json())
