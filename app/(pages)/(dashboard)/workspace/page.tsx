@@ -49,7 +49,7 @@ const CreateWorkspace = () => {
       })
 
       if (response.status === 201) {
-        router.push("/dashboard", { forceOptimisticNavigation: true })
+        router.push("/dashboard",)
         toast({
           description: "Your message has been sent.",
         })

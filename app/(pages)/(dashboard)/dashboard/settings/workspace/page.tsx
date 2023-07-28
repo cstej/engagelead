@@ -26,7 +26,7 @@ import {
 
 type Props = {}
 
-export const formSchema = z.object({
+const formSchema = z.object({
   name: z.string().min(2),
   user: z.string().min(2),
 })
