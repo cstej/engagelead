@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth"
 
 import { MainNav } from "./main-nav"
 import { UserAccountNav } from "./user-account-nav"
+import { ModeToggle } from "@/components/mode-toggle"
 
 type Props = {}
 
@@ -15,7 +16,13 @@ const DashbordHeader = async (props: Props) => {
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between space-x-4 sm:space-x-0 ">
         <MainNav items={siteConfig.dashboardMainNav} />
-        <UserAccountNav user={session?.user} />
+      <div className="flex gap-5 align-middle">
+        
+      <ModeToggle />
+      <UserAccountNav user={session?.user} />
+
+      </div>
+      
       </div>
     </header>
   )

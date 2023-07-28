@@ -44,6 +44,7 @@ const CreateWorkspace = () => {
       
       const response = await fetch("/api/workspaces", {
         method: "POST",
+ 
         body: JSON.stringify(values),
       })
 

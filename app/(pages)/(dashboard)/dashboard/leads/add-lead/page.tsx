@@ -63,7 +63,7 @@ export default function AddLead({}: Props) {
       })
 
       if (response.status === 201) {
-        router.push("/dashboard/leads", { forceOptimisticNavigation: true })
+        router.push("/dashboard/leads",)
         toast({
           description: "Lead has been recorded.",
         })

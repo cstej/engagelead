@@ -16,15 +16,16 @@ type Props = {
 const DashboardLayout = async ({ children }: Props) => {
   const session = await getServerSession(authOptions)
   if (session) {
-    const workspace = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
         email: session.user.email,
-        workspaceIds: {
-          isEmpty: false,
-        },
+      },
+      include: {
+        workspaces : true
       },
     })
-    if (!workspace) {
+    
+    if (!user || !user.workspaces.length) {
       redirect("/workspace")
     }
   }
