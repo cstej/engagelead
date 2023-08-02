@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest, {params}: {params: {workspaceId: string}}) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -14,41 +14,58 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    const workspace = await prisma.workspaceUser.findFirst({
-      where: {
-        userId: session.user.id,
-      },
-    })
-
-    const workspaceWithUsers = await prisma.workspace.findUnique({
-      where: {
-        id: workspace?.workspaceId,
-      },
-      include: {
-        users :{
-            include: {
-                user: true
-            }
+    
+    const workspaceWithUsers = await prisma.workspace.aggregateRaw({
+      pipeline: [
+        {
+          $match: { _id: { $oid: params.workspaceId } },
         },
-      },
+        {
+          $lookup: {
+            from: "WorkspaceUser",
+            localField: "_id",
+            foreignField: "workspaceId",
+            as: "users",
+          },
+        },
+        {
+          $unwind: "$users",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "users.userId",
+            foreignField: "_id",
+            as: "users.user",
+          },
+        },
+        {
+          $unwind: "$users.user",
+        },
+        {
+          $project: {
+            _id: { $toString: "$_id" },
+            name: 1,
+            "users.user": {
+              id: { $toString: "$users.user._id" },
+              email: "$users.user.email",
+              emailVerified: { $ifNull: ["$users.user.emailVerified", null] },
+              name: "$users.user.name",
+              image: { $ifNull: ["$users.user.image", null] },
+            },
+            "users.role": 1,
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            name: { $first: "$name" },
+            users: { $push: { $mergeObjects: ["$users.user", { role: "$users.role" }] } },
+          },
+        },
+    ]})
 
-    })
-
-    // const workspaceWithUsers =await prisma.workspaceUser.findFirst({
-    //   where: {
-    //     userId: session.user.id,
-    //   },
-    //   include: {
-
-    //     workspace: {
-    //       include: {
-    //         users: true,
-    //       },
-    //     },
-    //   },
-    // })
-
-    return new NextResponse(JSON.stringify({ data: workspaceWithUsers }), {
+    return new NextResponse(JSON.stringify({ data: workspaceWithUsers[0] }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",

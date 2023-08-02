@@ -75,9 +75,14 @@ export default function AddLead({}: Props) {
     }
   }
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col space-y-6">
       <div className="flex justify-between">
-        <p className="pb-8 text-2xl font-semibold tracking-wide">Add Lead</p>
+      <div>
+        <h3 className="text-lg font-medium">New Lead</h3>
+        <p className="text-sm text-muted-foreground">
+        Add potential customers to your database.
+        </p>
+      </div>
         <div className="flex gap-4">
           <Button variant={"outline"}>
             {" "}
@@ -85,6 +90,7 @@ export default function AddLead({}: Props) {
           </Button>
         </div>
       </div>
+      <Separator/>
       <div className="w-full rounded-md border p-6">
         <Form {...form}>
           <form

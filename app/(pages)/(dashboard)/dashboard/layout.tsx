@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma"
 import DashbordHeader from "./components/dashboard-nav"
 import { DashboardNav } from "./components/dashboard-sidenav"
 import { dashboardConfig } from "./config/dashboard"
+import WorkspaceProvider from "@/components/workspace-provider"
 
 type Props = {
   children: React.ReactNode
@@ -29,11 +30,15 @@ const DashboardLayout = async ({ children }: Props) => {
       redirect("/workspace")
     }
   }
+
+  
   return (
+    <WorkspaceProvider>
+
     <div className="flex min-h-screen flex-col">
       <DashbordHeader />
 
-      <div className="container grid flex-1   md:grid-cols-[200px_1fr]">
+      <div className="grid flex-1 px-5   md:grid-cols-[200px_1fr]">
         <aside className="hidden w-[200px] flex-col border-r pr-6 md:flex ">
           <DashboardNav items={dashboardConfig.sidebarNav} />
         </aside>
@@ -42,6 +47,8 @@ const DashboardLayout = async ({ children }: Props) => {
         </main>
       </div>
     </div>
+    </WorkspaceProvider>
+
   )
 }
 

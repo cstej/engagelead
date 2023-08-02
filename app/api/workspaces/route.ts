@@ -10,9 +10,6 @@ const createWorkspaceSchema = z.object({
   name: z.string().min(2).max(50),
 })
 
-
-
-
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -50,3 +47,34 @@ export async function POST(req: NextRequest) {
   }
 }
 
+
+// this api is used for geting one workpsce by user id for zustland store
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session) {
+      return new NextResponse(null, {
+        status: 401,
+        statusText: "Unauthorized",
+      })
+    }
+
+    const workspace = await prisma.workspaceUser.findFirst({
+      where: {
+        userId: session.user.id,
+      },
+      select: {
+        workspace: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      },
+    })
+
+
+    return NextResponse.json({data: workspace})
+  } catch (error) {}
+}

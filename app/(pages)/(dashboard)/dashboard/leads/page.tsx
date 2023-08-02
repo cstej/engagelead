@@ -8,6 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { Columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 import { cookies } from "next/headers";
+import { Separator } from "@/components/ui/separator"
 
 type Props = {}
 
@@ -24,17 +25,21 @@ async function getLeads() {
 
 export default async function LeadPage({}: Props) {
 
-const data = await getLeads()
+const {data} = await getLeads()
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col space-y-6">
       <div className="flex justify-between">
-        <p className="pb-8 text-2xl font-semibold tracking-wide">
-          {data.length} Leads
+      <div>
+        <h3 className="text-lg font-medium">Manage Lead</h3>
+        <p className="text-sm text-muted-foreground">
+        Nurture potential customers with streamlined lead management.
         </p>
+      </div>
+     
         <div className="flex gap-4">
           <Button variant={"outline"}>
-            {" "}
+          
             <DownloadIcon className="mr-2" /> Export
           </Button>
 
@@ -47,7 +52,9 @@ const data = await getLeads()
         </div>
       </div>
 
-      <DataTable data={data.data} columns={Columns} />
+      <Separator />
+
+      <DataTable data={data} columns={Columns} />
     </div>
   )
 }

@@ -14,7 +14,7 @@ const DashbordHeader = async (props: Props) => {
   const session = await getServerSession(authOptions)
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="container flex h-16 items-center justify-between space-x-4 sm:space-x-0 ">
+      <div className="flex h-16 items-center justify-between space-x-4 px-5 sm:space-x-0 ">
         <MainNav items={siteConfig.dashboardMainNav} />
       <div className="flex gap-5 align-middle">
         
