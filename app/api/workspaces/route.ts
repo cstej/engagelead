@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import _ from "lodash"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 
@@ -22,33 +23,37 @@ export async function POST(req: NextRequest) {
 
     const data = createWorkspaceSchema.parse(await req.json())
 
-    const workspace = await prisma.workspace.create({
+    const createdWorkspace = await prisma.workspace.create({
       data: {
         name: data.name,
-        users: {
+        members: {
           create: {
-            user: { connect: { id: session.user.id } },
+            user: {
+              connect: {
+                id: session.user.id,
+              },
+            },
             role: "ADMIN",
+
           },
         },
       },
     })
-
-    return new NextResponse(JSON.stringify({ data: workspace }), {
+    return new NextResponse(JSON.stringify({ data: createdWorkspace }), {
       status: 201,
       headers: {
         "Content-Type": "application/json",
       },
     })
   } catch (error) {
+    console.log(error)
     if (error instanceof z.ZodError) {
       return new NextResponse(JSON.stringify(error.issues), { status: 422 })
     }
   }
 }
 
-
-// this api is used for geting one workpsce by user id for zustland store
+// this api is used for geting all workspace  by user id for zustland store
 
 export async function GET(req: NextRequest) {
   try {
@@ -59,8 +64,7 @@ export async function GET(req: NextRequest) {
         statusText: "Unauthorized",
       })
     }
-
-    const workspace = await prisma.workspaceUser.findFirst({
+    const workspace = await prisma.workspaceMember.findMany({
       where: {
         userId: session.user.id,
       },
@@ -69,12 +73,25 @@ export async function GET(req: NextRequest) {
           select: {
             id: true,
             name: true,
-          }
-        }
+          },
+        },
+      },
+      orderBy: {
+        workspace: {
+          createdAt: "asc",
+        },
+    
       },
     })
 
+    const workspaceData = _.map(workspace, (item) => ({
+      id: _.get(item, "workspace.id"),
+      name: _.get(item, "workspace.name"),
+      // createdAt: _.get(item, "workspace.createdAt"),
+    }))
 
-    return NextResponse.json({data: workspace})
-  } catch (error) {}
+    return NextResponse.json({ data: workspaceData })
+  } catch (error) {
+    console.log(error)
+  }
 }

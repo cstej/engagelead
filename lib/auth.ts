@@ -1,6 +1,8 @@
+import { cookies } from "next/headers"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { User as UserModel } from "@prisma/client"
 import bcrypt from "bcrypt"
+import _ from "lodash"
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
@@ -8,7 +10,8 @@ import GoogleProvider from "next-auth/providers/google"
 import { prisma } from "./prisma"
 
 declare module "next-auth" {
-  interface User extends Omit<UserModel, "password"> {}
+  interface User
+    extends Omit<UserModel, "password" | "createdAt" | "updatedAt"> {}
 }
 
 export const authOptions: NextAuthOptions = {
@@ -30,6 +33,14 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.user.findFirst({
           where: {
             email,
+          },
+          select: {
+            id: true,
+            email: true,
+            image: true,
+            name: true,
+            emailVerified: true,
+            password: true,
           },
         })
 
@@ -60,8 +71,12 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile, email, credentials }) {
+ 
 
+      return true
+    },
+    async jwt({ token, user }) {
       const dbUser = await prisma.user.findFirst({
         where: {
           email: token.email,
@@ -78,10 +93,9 @@ export const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         picture: dbUser.image,
-      
       }
     },
-    async session({ token, session, }) {
+    async session({ token, session }) {
       if (token) {
         session.user.id = token.id
         session.user.name = token.name

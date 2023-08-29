@@ -1,24 +1,14 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-
-import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { workspaceWithMembersSchema } from "@/lib/zodSchemas"
+import { z } from "zod"
 
-export async function GET(req: NextRequest, {params}: {params: {workspaceId: string}}) {
-  try {
-    const session = await getServerSession(authOptions)
-    if (!session) {
-      return new NextResponse(null, {
-        status: 401,
-        statusText: "Unauthorized",
-      })
-    }
+export const getWorkpsaceWithMemebers = async (workspaceId: string) => {
 
-    
-    const workspaceWithMembers = await prisma.workspace.aggregateRaw({
+  return await prisma.workspace
+    .aggregateRaw({
       pipeline: [
         {
-          $match: { _id: { $oid: params.workspaceId } },
+          $match: { _id: { $oid: workspaceId } },
         },
         {
           $lookup: {
@@ -44,10 +34,11 @@ export async function GET(req: NextRequest, {params}: {params: {workspaceId: str
         },
         {
           $project: {
-            _id: { $toString: "$_id" },
+            id: { $toString: "$_id" },
             name: 1,
             "members.user": {
-              id: { $toString: "$members.user._id" },
+              id: { $toString: "$members._id" },
+              userId: { $toString: "$members.user._id" },
               email: "$members.user.email",
               emailVerified: { $ifNull: ["$members.user.emailVerified", null] },
               name: "$members.user.name",
@@ -60,18 +51,22 @@ export async function GET(req: NextRequest, {params}: {params: {workspaceId: str
           $group: {
             _id: "$_id",
             name: { $first: "$name" },
-            members: { $push: { $mergeObjects: ["$members.user", { role: "$members.role" }] } },
+            members: {
+              $push: {
+                $mergeObjects: ["$members.user", { role: "$members.role" }],
+              },
+            },
           },
         },
-    ]})
-
-    return new NextResponse(JSON.stringify({ data: workspaceWithMembers[0] }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
+        {
+          $project: {
+            _id: 0, 
+            id: {$toString: "$_id"},
+            name: 1,
+            members: 1,
+          },
+        },
+      ],
     })
-  } catch (error) {
-    return new NextResponse(JSON.stringify(error), { status: 422 })
-  }
+    .then((result) => result[0] as z.infer<typeof workspaceWithMembersSchema>)
 }

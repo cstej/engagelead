@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Info } from "lucide-react"
+import { Info, Loader2 } from "lucide-react"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { useDebounce } from "usehooks-ts"
@@ -41,7 +41,6 @@ const formSchema = z.object({
     .refine(
       async (email) => {
         if (!email.match(/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-          
           return false
         }
         return isEmailExists(email)
@@ -54,7 +53,7 @@ const formSchema = z.object({
 })
 
 const isEmailExists = async (email: string) => {
-  const res = await fetch(`/api/user/${email}`,)
+  const res = await fetch(`/api/user/${email}`)
   if (res.status === 200) {
     const { user } = await res.json()
     return !user
@@ -194,7 +193,15 @@ const SignupPage = (props: Props) => {
             </Form>
           </CardContent>
           <CardFooter>
-            <Button type="submit" form="signup" className="w-full">
+            <Button
+              disabled={form.formState.isSubmitting}
+              type="submit"
+              form="signup"
+              className="w-full"
+            >
+              {form.formState.isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Create account
             </Button>
           </CardFooter>

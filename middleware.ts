@@ -1,6 +1,9 @@
+import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { getToken } from "next-auth/jwt"
 import { withAuth } from "next-auth/middleware"
+
+import { prisma } from "./lib/prisma"
 
 // Define your public API routes
 
@@ -52,7 +55,9 @@ export default withAuth(
 
   {
     callbacks: {
-      async authorized() {
+      async authorized({ req, token }) {
+     
+
         return true
       },
     },
@@ -60,5 +65,5 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/workspace",],
+  matcher: ["/dashboard/:path*", "/login", "/workspace", "/accept-invite"],
 }

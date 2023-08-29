@@ -19,7 +19,7 @@ type Lead = {
   created_at: string
 }
 
-export const Columns: ColumnDef<Lead>[] = [
+export const Columns: ColumnDef<Lead, undefined>[] = [
   {
     id: "select",
     header: ({ table }) => (

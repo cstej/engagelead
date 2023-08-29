@@ -14,10 +14,12 @@ enum Role {
 }
 
 model Workspace {
-  id        String          @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime        @default(now())
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime          @default(now())
   name      String?
-  users     WorkspaceUser[]
+  members   WorkspaceMember[]
+
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -47,24 +49,39 @@ model Session {
 }
 
 model User {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?         @unique
+  email         String?           @unique
   emailVerified DateTime?
   image         String?
   password      String?
   accounts      Account[]
   sessions      Session[]
-  workspaces    WorkspaceUser[]
+  workspaces    WorkspaceMember[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
-model WorkspaceUser {
+model InviteToken {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  token       String   @unique
+  email       String
+  workspaceId String   @db.ObjectId
+  role        Role
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expires     DateTime
+}
+
+model WorkspaceMember {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   user        User      @relation(fields: [userId], references: [id])
   userId      String    @db.ObjectId
   role        Role
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
   workspaceId String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model VerificationToken {
@@ -85,4 +102,5 @@ model Lead {
   lead_source String
   assigned_to String
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

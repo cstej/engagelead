@@ -25,8 +25,6 @@ export async function POST(req: Request) {
         statusText: "Unauthorized",
       })
     }
-  
-  
 
     const data = createLeadSchema.parse(await req.json())
 
@@ -63,13 +61,6 @@ export async function GET(req: NextRequest) {
         statusText: "Unauthorized",
       })
     }
-
-
-    // const user = await getToken({ req ,decode(jwt){
-    //  return decode(jwt)
-    // }})
-   
-    // return new NextResponse(JSON.stringify(token))
 
    
     const leads = await prisma.lead.findMany()

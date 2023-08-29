@@ -8,24 +8,36 @@ type Props = {
 }
 
 export default function WorkspaceProvider({ children }: Props) {
-  const { setWorkspace } = useWorkspaceStore()
+  const { workspace, setWorkspace } = useWorkspaceStore()
+  const [loading, setLoading] = React.useState(true)
+
   useEffect(() => {
-    async function fetchdata() {
+    async function fetchData() {
       const res = await fetch("/api/workspaces")
       const { data } = await res.json()
+      const workspace = data[0]
 
-      useWorkspaceStore.setState({ workspace: data.workspace })
+      setWorkspace(workspace)
     }
 
-    fetchdata()
-  }, [])
+    if (workspace === null) {
+      fetchData()
+    }
 
-  const { workspace } = useWorkspaceStore();
+    if (workspace !== null) {
+      setLoading(false)
+    }
+  }, [workspace,setWorkspace])
 
-  if (workspace === null) {
-    return   <div className="flex h-screen items-center justify-center">
-    <div className="h-14 w-14 animate-spin rounded-full border-t-4 border-blue-500"></div>
-  </div>;
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="grid h-[70dvh] place-items-center">
+  //       <div className="flex flex-col items-center gap-2">
+  //         <Loader className=" animate-spin" />
+  //         <div>Please wait while we make everything perfect for you...</div>
+  //       </div>
+  //     </div>
+  //   )
+  // }
   return <div>{children}</div>
 }
