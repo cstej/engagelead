@@ -47,7 +47,7 @@ export default function MemberInviteModal({}: Props) {
 
   const inviteMemberFormSchema = z.object({
     email: z.string().email(),
-    role: z.nativeEnum(Role),
+    role: z.enum([Role.ADMIN, Role.SALES_AGENT, Role.MANAGER]),
   })
 
   const inviteMemberForm = useForm({
