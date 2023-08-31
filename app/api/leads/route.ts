@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
     }
 
     const leads = await prisma.lead.findMany()
-    return new NextResponse(JSON.stringify(leads), {
+    return new NextResponse(JSON.stringify({data: leads}), {
       status: 200,
       headers: {
         "Content-Type": "application/json",

@@ -11,22 +11,25 @@ import { DataTable } from "./_components/data-table"
 
 type Props = {}
 
+export const dynamic = "force-dynamic"
+
 async function getLeads() {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/leads`,
-      {
-        method: "GET",
-        cache: "no-cache",
-        credentials: "include",
-        headers: { Cookie: cookies().toString() },
-      }
-    )
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/leads`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: cookies().toString(),
+      },
+    })
 
     if (res.status === 401) {
       throw new Error("Unauthorized")
     } else if (res.status === 200) {
-      return res
+      const data = await res.json()
+      return data?.data
+    } else {
+      throw new Error(`Unexpected response status: ${res.status}`)
     }
   } catch (error) {
     console.log(error)
@@ -34,12 +37,7 @@ async function getLeads() {
 }
 
 export default async function LeadPage({}: Props) {
-  const res = await getLeads()
-
-  const data = await res?.json()
-
-  console.log(data)
-
+  const data = await getLeads()
   return (
     <div className="flex min-h-screen flex-col space-y-6">
       <div className="flex justify-between">
