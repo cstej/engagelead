@@ -13,8 +13,8 @@ type Props = {}
 
 export const dynamic = "force-dynamic"
 
-export async function getLeads() {
-  try {
+ async function getLeads() {
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/leads`, {
       method: "GET",
       headers: {
@@ -23,17 +23,13 @@ export async function getLeads() {
       },
     })
 
-    if (res.status === 401) {
-      throw new Error("Unauthorized")
-    } else if (res.status === 200) {
-      const data = await res.json()
-      return data?.data
-    } else {
-      throw new Error(`Unexpected response status: ${res.status}`)
+    if (!res.ok) {
+      throw new Error('Failed to fetch data')
     }
-  } catch (error) {
-    console.log(error)
-  }
+
+
+    const data = await res.json()
+    return data?.data
 }
 
 export default async function LeadPage({}: Props) {
