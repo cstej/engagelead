@@ -53,18 +53,15 @@ export default withAuth(
             }
           )
 
-       
-
-          if(res.status === 200) {
-
-           const cw = await res.json()
+          if (res.status === 200) {
+            const cw = await res.json()
 
             if (!cw) {
               console.log("redirecting to workspace setup")
               // If workspace information is still missing, redirect to workspace setup.
               return NextResponse.redirect(new URL("/workspace", req.url))
             }
-  
+
             if (cw) {
               console.log("setting workspace cookie")
               // If workspace information is available, set it as a cookie and continue.
@@ -72,12 +69,7 @@ export default withAuth(
               response.cookies.set("workspace", JSON.stringify(cw))
               return response
             }
-
           }
-
-        
-
-        
         }
       }
     } catch (err) {

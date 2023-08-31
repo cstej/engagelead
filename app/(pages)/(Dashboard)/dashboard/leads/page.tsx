@@ -66,7 +66,7 @@ export default async function LeadPage({}: Props) {
 
       <Separator />
 
-      <DataTable data={data} columns={Columns} />
+      <DataTable data={data || []} columns={Columns} />
     </div>
   )
 }
