@@ -5,6 +5,7 @@ import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
 // Define a schema for workspace creation data
 const createWorkspaceSchema = z.object({
@@ -39,6 +40,8 @@ export async function POST(req: NextRequest) {
         },
       },
     })
+
+    revalidatePath("/dashboard")
     return new NextResponse(JSON.stringify({ data: createdWorkspace }), {
       status: 201,
       headers: {

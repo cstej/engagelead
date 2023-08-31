@@ -61,7 +61,7 @@ export default function MemberInviteModal({}: Props) {
   const handleInviteMemberSubmit = async (
     value: z.infer<typeof inviteMemberFormSchema>
   ) => {
-    const result = await inviteMember({ ...value, workspaceId: workspace.id })
+    const result = await inviteMember({ ...value, workspaceId: workspace?.id })
 
     if (result?.error) {
       toast({

@@ -67,7 +67,7 @@ export function WorkspaceSwitcher() {
 
           <span className="truncate">
             {value
-              ? workspaces?.find((workspace) => workspace.id === value)?.name
+              ? workspaces?.find((workspace) => workspace?.id === value)?.name
               : "Select Workspace..."}
           </span>
 
@@ -81,8 +81,8 @@ export function WorkspaceSwitcher() {
           <CommandGroup>
             {workspaces?.map((workspace, i) => (
               <CommandItem
-                key={workspace.id}
-                value={workspace.id}
+                key={workspace?.id}
+                value={workspace?.id}
                 onSelect={(currentValue) => {
                   setValue(currentValue)
                   setOpen(false)
@@ -95,7 +95,7 @@ export function WorkspaceSwitcher() {
                 <CheckIcon
                   className={cn(
                     "ml-auto h-4 w-4",
-                    value === workspace.id ? "opacity-100" : "opacity-0"
+                    value === workspace?.id ? "opacity-100" : "opacity-0"
                   )}
                 />
               </CommandItem>

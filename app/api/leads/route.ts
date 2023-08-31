@@ -4,8 +4,7 @@ import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { getToken ,decode} from "next-auth/jwt"
-import { NextApiRequest } from "next"
+import { getCurrentUserAndWorkspace } from "@/lib/sessions"
 
 const createLeadSchema = z.object({
   name: z.string().min(2).max(50).trim(),
@@ -53,18 +52,17 @@ export async function POST(req: Request) {
 
 export async function GET(req: NextRequest) {
   try {
+    const uw = await getCurrentUserAndWorkspace()
 
-    const session = await getServerSession(authOptions)
-    if (!session) {
+    if (!uw) {
       return new NextResponse(null, {
         status: 401,
         statusText: "Unauthorized",
       })
     }
 
-   
     const leads = await prisma.lead.findMany()
-    return new NextResponse(JSON.stringify({ data: leads }), {
+    return new NextResponse(JSON.stringify(leads), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
@@ -72,8 +70,5 @@ export async function GET(req: NextRequest) {
     })
   } catch (error) {
     return new NextResponse(JSON.stringify(error))
-    
   }
 }
-
-

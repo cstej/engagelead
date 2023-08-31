@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { workspaceWithMembersSchema } from "@/lib/zodSchemas"
 import { z } from "zod"
 
-export const getWorkpsaceWithMemebers = async (workspaceId: string) => {
+export const getWorkspaceWithMemebers = async (workspaceId: string) => {
 
   return await prisma.workspace
     .aggregateRaw({

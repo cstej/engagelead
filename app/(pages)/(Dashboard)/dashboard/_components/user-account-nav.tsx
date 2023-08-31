@@ -54,6 +54,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
             event.preventDefault()
             signOut({
               callbackUrl: `${window.location.origin}/login`,
+              
             })
           }}
         >

@@ -1,18 +1,15 @@
 import Link from "next/link"
 import { getServerSession } from "next-auth"
 
+import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { authOptions } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { Icons } from "@/components/icons"
 
 import { ModeToggle } from "../mode-toggle"
 import { SignoutBtn } from "./SignOutBtn"
-
-
-import { NavItem } from "@/types/nav"
-import { Icons } from "@/components/icons"
-
 
 export async function SiteHeader() {
   const session = await getServerSession(authOptions)
@@ -37,12 +34,12 @@ export async function SiteHeader() {
               </>
             ) : (
               <>
-                {/* <Link
+                <Link
                   href={siteConfig.links.signup}
                   className={cn(buttonVariants({ variant: "outline" }))}
                 >
                   Signup
-                </Link> */}
+                </Link>
                 <Link
                   href={siteConfig.links.login}
                   className={cn(buttonVariants({ variant: "default" }))}
@@ -57,11 +54,6 @@ export async function SiteHeader() {
     </header>
   )
 }
-
-
-
-
-
 
 interface NavProps {
   items?: NavItem[]

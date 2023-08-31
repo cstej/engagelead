@@ -11,21 +11,34 @@ import { DataTable } from "./_components/data-table"
 
 type Props = {}
 
-
 async function getLeads() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/leads`, {
-    method: "GET",
-    cache: "no-cache",
-    credentials: "include",
-    headers: { Cookie: cookies().toString() },
-  })
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/leads`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        credentials: "include",
+        headers: { Cookie: cookies().toString() },
+      }
+    )
 
-  return response.json()
+    if (res.status === 401) {
+      throw new Error("Unauthorized")
+    } else if (res.status === 200) {
+      return res
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export default async function LeadPage({}: Props) {
-  const { data } = await getLeads()
+  const res = await getLeads()
 
+  const data = await res?.json()
+
+  console.log(data)
 
   return (
     <div className="flex min-h-screen flex-col space-y-6">

@@ -1,9 +1,9 @@
-import React, { Suspense } from "react"
+import React from "react"
 
 import { getCurrentWorkspace } from "@/lib/sessions"
 import { Separator } from "@/components/ui/separator"
 
-import { getWorkpsaceWithMemebers } from "../loaders"
+import { getWorkspaceWithMemebers } from "../loaders"
 import WorkspaceSettingForm from "./_components/WorkspaceSettingForm"
 
 
@@ -13,7 +13,7 @@ type Props = {}
 export default async function WorkspaceSetting({}: Props) {
   const workspace = await getCurrentWorkspace()
 
-  const workspaceWithMember = (await getWorkpsaceWithMemebers(
+  const workspaceWithMember = (await getWorkspaceWithMemebers(
     workspace.id
   ))
   return (

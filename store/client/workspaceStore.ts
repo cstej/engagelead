@@ -23,7 +23,10 @@ const useWorkspaceStore = create<WorkspaceStore>()(
         // Serialize the state to JSON
         const newStateJSON = JSON.stringify(newState.workspace)
 
-        // Persist the JSON state in a cookie
+        if (newStateJSON === "{}" || newStateJSON === "null" || !newStateJSON) {
+          Cookies.remove("workspace")
+          return newState
+        }
         Cookies.set("workspace", newStateJSON)
         return newState
       }),
