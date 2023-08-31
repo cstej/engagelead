@@ -13,7 +13,7 @@ type Props = {}
 
 export const dynamic = "force-dynamic"
 
-async function getLeads() {
+export async function getLeads() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/leads`, {
       method: "GET",
