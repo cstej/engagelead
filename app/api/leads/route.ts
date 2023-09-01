@@ -5,6 +5,7 @@ import { z } from "zod"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUserAndWorkspace } from "@/lib/sessions"
+import { getErrorMessage } from "@/lib/exceptions/errors"
 
 const createLeadSchema = z.object({
   name: z.string().min(2).max(50).trim(),
@@ -55,20 +56,11 @@ export async function GET(req: NextRequest) {
     const uw = await getCurrentUserAndWorkspace()
 
     if (!uw) {
-      return new NextResponse(null, {
-        status: 401,
-        statusText: "Unauthorized",
-      })
+      return NextResponse.json({ message: "Not Authorized" }, { status: 401, })
     }
 
     const leads = await prisma.lead.findMany()
-    return new NextResponse(JSON.stringify({data: leads}), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    return NextResponse.json({data: leads}, { status: 200, })
   } catch (error) {
-    return new NextResponse(JSON.stringify(error))
-  }
-}
+    return NextResponse.json({message: getErrorMessage(error)}, { status: 500, })
+}}
