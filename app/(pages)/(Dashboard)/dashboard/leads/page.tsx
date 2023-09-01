@@ -17,6 +17,7 @@ export const dynamic = "force-dynamic"
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/leads`, {
       method: "GET",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
         Cookie: cookies().toString(),
