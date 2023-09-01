@@ -14,12 +14,13 @@ enum Role {
 }
 
 model Workspace {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime          @default(now())
-  name      String?
-  members   WorkspaceMember[]
-
-  updatedAt DateTime @updatedAt
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt       DateTime          @default(now())
+  name            String?
+  members         WorkspaceMember[]
+  updatedAt       DateTime          @updatedAt
+  fieldDefinition FieldDefinition[]
+  leads           Lead[]
 }
 
 model Account {
@@ -58,6 +59,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   workspaces    WorkspaceMember[]
+  leads        Lead[]
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 }
@@ -94,13 +96,41 @@ model VerificationToken {
 }
 
 model Lead {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String
+  phone        String
+  lead_status  String
+  lead_source  String
+  assigned_to  String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  workspace    Workspace          @relation(fields: [workspaceId], references: [id])
+  workspaceId  String             @db.ObjectId
+  customFields CustomFieldValue[]
+  createdBy    User               @relation(fields: [createdById], references: [id])
+  createdById  String             @db.ObjectId
+}
+
+model FieldDefinition {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String    @db.ObjectId
   name        String
-  email       String
-  phone       String
-  lead_status String
-  lead_source String
-  assigned_to String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  type        String
+  options     String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  customFieldValue CustomFieldValue[]
+}
+
+model CustomFieldValue {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  lead              Lead     @relation(fields: [leadId], references: [id])
+  leadId            String   @db.ObjectId
+  fieldDefinitionId String   @db.ObjectId
+  fieldDefinition   FieldDefinition @relation(fields: [fieldDefinitionId], references: [id])
+  value             String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
