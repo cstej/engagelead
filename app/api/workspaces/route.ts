@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    revalidatePath("/dashboard")
+    revalidatePath("/app/")
     return new NextResponse(JSON.stringify({ data: createdWorkspace }), {
       status: 201,
       headers: {

@@ -6,7 +6,7 @@ import { withAuth } from "next-auth/middleware"
 export default withAuth(
   async function middleware(req) {
     try {
-      const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard")
+      const isDashboardPage = req.nextUrl.pathname.startsWith("/app")
       const token = await getToken({ req })
       const isAuth = !!token
       const isAuthPage =
@@ -16,7 +16,7 @@ export default withAuth(
       if (isAuthPage) {
         if (isAuth) {
           // Redirect authenticated users to the dashboard.
-          return NextResponse.redirect(new URL("/dashboard", req.url))
+          return NextResponse.redirect(new URL("/app/dashboard", req.url))
         }
 
         // If it's an authentication page and the user is not authenticated, allow access.
@@ -88,5 +88,5 @@ export default withAuth(
 
 export const config = {
   // Define the URL patterns to which this middleware should be applied.
-  matcher: ["/dashboard/:path*", "/login", "/workspace", "/accept-invite"],
+  matcher: ["/app/:path*", "/login", "/workspace", "/accept-invite"],
 }

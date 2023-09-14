@@ -47,7 +47,7 @@ export async function updateWorkspace(data: any) {
   }
 
   // Invalidate the cache for the workspace settings page.
-  revalidatePath("/dashboard/settings/workspace")
+  revalidatePath("/app/settings/workspace")
 }
 
 /**
@@ -105,7 +105,7 @@ export async function updateMemberRole(data: MemberUpdate) {
   }
 
   // Invalidate the cache for the workspace settings page.
-  revalidatePath("/dashboard/settings/workspace")
+  revalidatePath("/app/settings/workspace")
 }
 
 export async function inviteMember(data: {

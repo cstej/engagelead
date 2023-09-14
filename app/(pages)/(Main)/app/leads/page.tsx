@@ -26,6 +26,7 @@ export default async function LeadPage({}: Props) {
 
   const data = result?.data || []
 
+
   return (
     <div className="flex min-h-screen flex-col space-y-6">
       <div className="flex justify-between">
@@ -42,7 +43,7 @@ export default async function LeadPage({}: Props) {
           </Button>
 
           <Link
-            href={"/dashboard/leads/add-lead"}
+            href={"/app/leads/add"}
             className={buttonVariants({ variant: "default" })}
           >
             New Lead

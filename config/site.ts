@@ -23,6 +23,6 @@ export const siteConfig = {
     docs: "https://ui.shadcn.com",
     login: "/login",
     signup:"/signup",
-    dashboard: "/dashboard"
+    dashboard: "/app/dashboard"
   },
 }

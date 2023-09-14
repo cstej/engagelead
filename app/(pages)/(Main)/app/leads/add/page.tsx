@@ -63,7 +63,7 @@ export default function AddLead({}: Props) {
       })
 
       if (response.status === 201) {
-        router.push("/dashboard/leads",)
+        router.push("/app/dashboard/leads",)
         toast({
           description: "Lead has been recorded.",
         })

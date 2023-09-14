@@ -2,7 +2,7 @@ import React from "react"
 import { Metadata } from "next"
 import { Separator } from "@/components/ui/separator"
 
-import Breadcrumb from "../_components/breadcrumb"
+
 import { IntegrationCard } from "../_components/integration-card"
 import { FacebookIntregationDialog } from "../_components/facebook-intregation-dialog"
 

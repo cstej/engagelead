@@ -36,7 +36,7 @@ export default function AcceptInviteCard({}: Props) {
         description: "Invitation accepted successfully.",
         variant: "default",
       })
-      router.push("/dashboard")
+      router.push("/app/dashboard")
     }
   }
 
