@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth"
 import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
+import { getErrorMessage } from "@/lib/exceptions/errors"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUserAndWorkspace } from "@/lib/sessions"
-import { getErrorMessage } from "@/lib/exceptions/errors"
 
 const createLeadSchema = z.object({
   name: z.string().min(2).max(50).trim(),
@@ -14,12 +14,14 @@ const createLeadSchema = z.object({
   lead_source: z.string(),
   lead_status: z.string(),
   assigned_to: z.string(),
+  customFields: z.record(z.unknown()).optional(),
 })
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) {
+    const uw = await getCurrentUserAndWorkspace()
+    if (!session || !uw) {
       return new NextResponse(null, {
         status: 401,
         statusText: "Unauthorized",
@@ -27,6 +29,17 @@ export async function POST(req: Request) {
     }
 
     const data = createLeadSchema.parse(await req.json())
+
+    const customFields = data.customFields
+      ? Object.entries(data.customFields).map(([fieldDefinitionId, value]) => ({
+          fieldDefinition: {
+            connect: {
+              id: fieldDefinitionId,
+            },
+          },
+          value: value as string,
+        }))
+      : []
 
     const lead = await prisma.lead.create({
       data: {
@@ -36,6 +49,11 @@ export async function POST(req: Request) {
         lead_source: data.lead_source,
         lead_status: data.lead_status,
         assigned_to: data.assigned_to,
+        createdById: session.user.id,
+        workspaceId: uw.workspaceId,
+        customFields: {
+          create: customFields,
+        },
       },
     })
     return new NextResponse(JSON.stringify({ data: lead }), {
@@ -56,11 +74,15 @@ export async function GET(req: NextRequest) {
     const uw = await getCurrentUserAndWorkspace()
 
     if (!uw) {
-      return NextResponse.json({ message: "Not Authorized" }, { status: 401, })
+      return NextResponse.json({ message: "Not Authorized" }, { status: 401 })
     }
 
     const leads = await prisma.lead.findMany()
-    return NextResponse.json({data: leads}, { status: 200, })
+    return NextResponse.json({ data: leads }, { status: 200 })
   } catch (error) {
-    return NextResponse.json({message: getErrorMessage(error)}, { status: 500, })
-}}
+    return NextResponse.json(
+      { message: getErrorMessage(error) },
+      { status: 500 }
+    )
+  }
+}

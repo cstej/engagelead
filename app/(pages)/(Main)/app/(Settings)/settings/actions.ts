@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 import { sendEmail } from "@/lib/email"
 import { getErrorMessage } from "@/lib/exceptions/errors"
 import { prisma } from "@/lib/prisma"
-import { getCurrentUser } from "@/lib/sessions"
+import { getCurrentUser, getCurrentUserAndWorkspace } from "@/lib/sessions"
 
 /**
  * Updates the name of a workspace.
@@ -188,4 +188,27 @@ export async function inviteMember(data: {
       error: getErrorMessage(error),
     }
   }
+}
+
+
+
+export async function removeMemberWorkspace(memberId : string){
+
+
+  const uw = await getCurrentUserAndWorkspace()
+
+  if(!uw){
+    return null
+  }
+
+
+  await prisma.workspaceMember.delete({
+    where: {
+     id: memberId
+    }
+  })
+
+  revalidatePath("/app/settings/workspace")
+
+
 }

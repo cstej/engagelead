@@ -8,18 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
+import { Lead } from "@/types/lead"
 
-type Lead = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  lead_status: string;
-  lead_source: string;
-  assigned_to: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+
 
 export const Columns: ColumnDef<Lead, undefined>[] = [
   {
@@ -114,7 +105,7 @@ export const Columns: ColumnDef<Lead, undefined>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("assigned_to")}</div>
+      <div className="capitalize">{row.original.assigned_to.name}</div>
     ),
   },
   {

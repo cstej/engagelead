@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 
 import { Metadata } from "next"
+import { Inter, Roboto } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
 import NextTopLoader from "nextjs-toploader"
 
@@ -10,15 +11,15 @@ import { Toaster } from "@/components/ui/toaster"
 import AuthProvider from "@/components/auth-provider"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Roboto ,Inter } from 'next/font/google'
+
+import TrpcProvider from "../_trpc/TrpcProvider"
 
 const roboto = Roboto({
-  weight: [ "300","400", "500" , "700", "900", ],
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
- 
+  weight: ["300", "400", "500", "700", "900"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
 })
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -41,29 +42,27 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-
-  
   return (
     <>
       <html lang="en" suppressHydrationWarning>
-        <body
-          className={cn(
-            "min-h-screen   antialiased",
-            roboto.className
-        
-          )}
-        >
+        <body className={cn("min-h-screen   antialiased", roboto.className)}>
           <NextTopLoader showSpinner={false} />
+          <TrpcProvider>
+            <AuthProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+              >
+                <div className="relative flex min-h-screen flex-col ">
+                  <div className="flex-1">{children}</div>
+                </div>
+                <Toaster />
+                <TailwindIndicator />
+              </ThemeProvider>
+            </AuthProvider>
+          </TrpcProvider>
 
-          <AuthProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <div className="relative flex min-h-screen flex-col ">
-                <div className="flex-1">{children}</div>
-              </div>
-              <Toaster />
-              <TailwindIndicator />
-            </ThemeProvider>
-          </AuthProvider>
           <Analytics mode="production" />
         </body>
       </html>

@@ -1,13 +1,23 @@
 "use client"
 
-import { error } from "console"
+
 import React, { useEffect } from "react"
 import { Role } from "@prisma/client"
-import { Loader2, MoreHorizontal, Pencil } from "lucide-react"
+import { Loader2, MoreHorizontal, Pencil, Trash } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { memberSchema } from "@/lib/zodSchemas"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -32,10 +42,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
 
-import { updateMemberRole } from "../../actions"
-import { Separator } from "@/components/ui/separator"
+import { removeMemberWorkspace, updateMemberRole } from "../../actions"
+import { useSession } from "next-auth/react"
 
 type Props = {
   member: z.infer<typeof memberSchema>
@@ -50,6 +61,11 @@ const updateRoleFormSchema = z.object({
 
 export function RoleModal({ member, workspaceId }: Props) {
   const [showEditMemberDialog, setShowEditMemberDialog] = React.useState(false)
+
+  const {data: session}=useSession()
+
+  
+
   const updateRoleForm = useForm({
     defaultValues: {
       role: member.role,
@@ -87,6 +103,21 @@ export function RoleModal({ member, workspaceId }: Props) {
     }
   }
 
+  const [deleteAlert, setDeleteAlert] = React.useState(false)
+
+  async function onHandleRemoveMemeber(id: string) {
+    try {
+      await removeMemberWorkspace(id)
+      toast({
+        title: "Member Removed",
+        description: "Your member has been removed successfully.",
+        variant: "default",
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <React.Fragment>
       <DropdownMenu>
@@ -101,9 +132,42 @@ export function RoleModal({ member, workspaceId }: Props) {
               <Pencil className="mr-2 h-4 w-4" />
               <span>Edit</span>
             </DropdownMenuItem>
+
+            <DropdownMenuItem disabled={member.role === Role.ADMIN || session?.user.email===member.email}
+              onSelect={() => {
+                setDeleteAlert(true)
+              }}
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              <span>Delete</span>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* delete Alert Diolog */}
+
+      <AlertDialog
+        key={member.id}
+        open={deleteAlert}
+        onOpenChange={setDeleteAlert}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently remove the{" "}
+              {member.name} from workspace.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => onHandleRemoveMemeber(member.id)}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog
         open={showEditMemberDialog}
@@ -124,34 +188,38 @@ export function RoleModal({ member, workspaceId }: Props) {
                 control={updateRoleForm.control}
                 render={({ field }) => (
                   <FormItem>
-                    
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem key={Role.ADMIN} value={Role.ADMIN}>Admin</SelectItem>
-                            <SelectItem key={Role.MANAGER}  value={Role.MANAGER}>
-                              Manager
-                            </SelectItem >
-                            <SelectItem key={Role.SALES_AGENT} value={Role.SALES_AGENT}>
-                              Sales Agent
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                  
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem key={Role.ADMIN} value={Role.ADMIN}>
+                            Admin
+                          </SelectItem>
+                          <SelectItem key={Role.MANAGER} value={Role.MANAGER}>
+                            Manager
+                          </SelectItem>
+                          <SelectItem
+                            key={Role.SALES_AGENT}
+                            value={Role.SALES_AGENT}
+                          >
+                            Sales Agent
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </form>
           </Form>
-          <Separator/>
+          <Separator />
           <DialogFooter>
             <Button
               disabled={

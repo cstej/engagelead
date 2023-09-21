@@ -17,13 +17,6 @@ export const revalidate = 0
 export default async function LeadPage({}: Props) {
   const result = await getLeads()
 
-  if (result.message) {
-    toast({
-      title: "Something went wrong",
-      description: result.message,
-    })
-  }
-
   const data = result?.data || []
 
 

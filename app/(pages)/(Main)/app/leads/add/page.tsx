@@ -1,12 +1,17 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { UploadIcon } from "@radix-ui/react-icons"
+import { CalendarIcon, UploadIcon } from "@radix-ui/react-icons"
+import { QueryKey, useQuery } from "@tanstack/react-query"
+import { format } from "date-fns"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Form,
   FormControl,
@@ -17,6 +22,11 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -24,11 +34,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
 import { leadSource, leadStatus } from "../data/data"
-import { toast } from "@/components/ui/use-toast"
-import { useRouter } from "next/navigation"
+import { useWorkspaceMembersStore } from "@/store/client"
 
 type Props = {}
 
@@ -39,11 +49,53 @@ const formSchema = z.object({
   lead_source: z.string(),
   lead_status: z.string(),
   assigned_to: z.string(),
+  customFields: z.record(z.unknown()).optional(),
 })
 
+type CustomFieldDefination = {
+  id: string
+  workspaceId: string
+  name: string
+  type: string
+  options: string[]
+  label?: string
+}
+
 export default function AddLead({}: Props) {
+  const [customFieldDefination, setCustomFieldDefination] = React.useState<
+    CustomFieldDefination[]
+  >([])
+
+  const {members,} = useWorkspaceMembersStore()
+
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const router = useRouter()
+
+  // fetch custom field defination
+
+  const { data } = useQuery(
+    ["customFieldDefination"],
+    async () => {
+      const response = await fetch("/api/field-defination")
+      const data = await response.json()
+
+      return data as CustomFieldDefination[]
+    },
+    {
+      onSuccess: (data) => {
+        setCustomFieldDefination(data)
+      },
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    }
+  )
+
+  useEffect(() => {
+    if (data) {
+      setCustomFieldDefination(data)
+    }
+  }, [data])
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,19 +107,19 @@ export default function AddLead({}: Props) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      const allFields = form.getValues()
       setIsLoading(true)
-      
+
       const response = await fetch("/api/leads", {
         method: "POST",
-        body: JSON.stringify(values),
+        body: JSON.stringify(allFields),
       })
 
       if (response.status === 201) {
-        router.push("/app/dashboard/leads",)
+        router.push("/app/leads")
         toast({
           description: "Lead has been recorded.",
         })
- 
       }
     } catch (error) {
       setIsLoading(false)
@@ -77,12 +129,12 @@ export default function AddLead({}: Props) {
   return (
     <div className="flex min-h-screen flex-col space-y-6">
       <div className="flex justify-between">
-      <div>
-        <h3 className="text-lg font-medium">New Lead</h3>
-        <p className="text-sm text-muted-foreground">
-        Add potential customers to your database.
-        </p>
-      </div>
+        <div>
+          <h3 className="text-lg font-medium">New Lead</h3>
+          <p className="text-sm text-muted-foreground">
+            Add potential customers to your database.
+          </p>
+        </div>
         <div className="flex gap-4">
           <Button variant={"outline"}>
             {" "}
@@ -90,8 +142,8 @@ export default function AddLead({}: Props) {
           </Button>
         </div>
       </div>
-      <Separator/>
-      <div className="w-full rounded-md border p-6">
+      <Separator />
+      <div>
         <Form {...form}>
           <form
             className="grid grid-cols-2 gap-4"
@@ -135,7 +187,7 @@ export default function AddLead({}: Props) {
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
                     <Input
-                    maxLength={10}
+                      maxLength={10}
                       type="number"
                       placeholder="Enter the phone..."
                       {...field}
@@ -203,8 +255,8 @@ export default function AddLead({}: Props) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {leadSource?.map((lead) => (
-                        <SelectItem value={lead.value}>{lead.label}</SelectItem>
+                      {members?.map((member) => (
+                        <SelectItem value={member.id}>{member.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -213,8 +265,96 @@ export default function AddLead({}: Props) {
               )}
             />
 
-            <Separator className="col-span-2" />
-            <div className=" col-start-2 mt-6 flex justify-end">
+            {customFieldDefination?.map((fieldDefination) => (
+              <>
+                {fieldDefination.type === "Text" && (
+                  <FormField
+                    key={fieldDefination.id}
+                    control={form.control}
+                    name={`customFields.${fieldDefination.id}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{fieldDefination.label}</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="h-10"
+                            placeholder={`Enter ${fieldDefination.label}...`}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {fieldDefination.type === "Number" && (
+                  <FormField
+                    key={fieldDefination.id}
+                    control={form.control}
+                    name={`customFields.${fieldDefination.id}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{fieldDefination.label}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            className="h-10"
+                            placeholder={`Enter ${fieldDefination.label}...`}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {fieldDefination.type === "Date" && (
+                  <FormField
+                    key={fieldDefination.id}
+                    control={form.control}
+                    name={`customFields.${fieldDefination.id}`}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>{fieldDefination.label}</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-[240px] pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </>
+            ))}
+
+            <Separator className="col-span-2 mt-4" />
+            <div className=" col-span-2 mt-4 flex justify-end">
               <Button disabled={isLoading} type="submit">
                 {" "}
                 {isLoading && (
