@@ -1,11 +1,9 @@
 import React from "react"
 
-import WorkspaceProvider from "@/components/workspace-provider"
-
 import DashbordHeader from "./_components/dashboard-nav"
 import { DashboardNav } from "./_components/dashboard-sidenav"
 import { dashboardConfig } from "./config/dashboard"
-import { getCurrentUserAndWorkspace } from "@/lib/sessions"
+
 
 
 type Props = {
@@ -16,7 +14,7 @@ type Props = {
 
 const DashboardLayout = async ({ children }: Props) => {
   return (
-    <WorkspaceProvider>
+   
       <div className="flex min-h-screen flex-col">
         <DashbordHeader />
 
@@ -29,7 +27,7 @@ const DashboardLayout = async ({ children }: Props) => {
           </main>
         </div>
       </div>
-    </WorkspaceProvider>
+
   )
 }
 

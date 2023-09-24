@@ -19,7 +19,7 @@ export async function getCurrentWorkspace() {
   const workspace = Cookies.get("workspace")?.value
 
   if (workspace) {
-    return JSON.parse(workspace)
+    return JSON.parse(workspace) as { id: string, name: string }
   } else {
     return null
   }

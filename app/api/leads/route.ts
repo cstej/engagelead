@@ -6,6 +6,8 @@ import { authOptions } from "@/lib/auth"
 import { getErrorMessage } from "@/lib/exceptions/errors"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUserAndWorkspace } from "@/lib/sessions"
+import { Lead } from "@/types/lead"
+import { HttpStatusCode } from "axios"
 
 const createLeadSchema = z.object({
   name: z.string().min(2).max(50).trim(),
@@ -17,15 +19,12 @@ const createLeadSchema = z.object({
   customFields: z.record(z.unknown()).optional(),
 })
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions)
     const uw = await getCurrentUserAndWorkspace()
     if (!session || !uw) {
-      return new NextResponse(null, {
-        status: 401,
-        statusText: "Unauthorized",
-      })
+      return NextResponse.json({ message: "Unauthorized Request" }, { status: HttpStatusCode.Unauthorized })
     }
 
     const data = createLeadSchema.parse(await req.json())
@@ -56,33 +55,34 @@ export async function POST(req: Request) {
         },
       },
     })
-    return new NextResponse(JSON.stringify({ data: lead }), {
-      status: 201,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+
+    return NextResponse.json({ lead }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 422 })
+      return NextResponse.json({ error: error.issues }, { status: HttpStatusCode.UnprocessableEntity })
     }
+
+    return NextResponse.json(
+      { message: getErrorMessage(error) },
+      { status: HttpStatusCode.InternalServerError }
+    )
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const uw = await getCurrentUserAndWorkspace()
 
     if (!uw) {
-      return NextResponse.json({ message: "Not Authorized" }, { status: 401 })
+      return NextResponse.json({ message: "Unauthorized Request" }, { status: HttpStatusCode.Unauthorized })
     }
 
     const leads = await prisma.lead.findMany()
-    return NextResponse.json({ data: leads }, { status: 200 })
+    return NextResponse.json({ data: leads },)
   } catch (error) {
     return NextResponse.json(
       { message: getErrorMessage(error) },
-      { status: 500 }
+      { status: HttpStatusCode.InternalServerError }
     )
   }
 }

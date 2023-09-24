@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Info, Loader2 } from "lucide-react"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
-import { useDebounce } from "usehooks-ts"
+import { useDebounce } from "@uidotdev/usehooks"
 import { z } from "zod"
 
 import { cn } from "@/lib/utils"
@@ -31,32 +31,23 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
+import { useQuery } from "@tanstack/react-query"
 
 type Props = {}
 const formSchema = z.object({
   name: z.string(),
   email: z
     .string()
-    .email()
-    .refine(
-      async (email) => {
-        if (!email.match(/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-          return false
-        }
-        return isEmailExists(email)
-      },
-      {
-        message: "This email is already registered.",
-      }
-    ),
+    .email("Please enter a valid email address"),
+    
   password: z.string().min(8, "Password must be at least 8 characters long"),
 })
 
 const isEmailExists = async (email: string) => {
   const res = await fetch(`/api/user/${email}`)
   if (res.status === 200) {
-    const { user } = await res.json()
-    return !user
+    const { isUser } = await res.json() as { isUser: boolean }
+    return isUser
   }
 }
 const SignupPage = (props: Props) => {
@@ -69,6 +60,22 @@ const SignupPage = (props: Props) => {
       name: "",
       email: "",
       password: "",
+    },
+  })
+
+  const debouncedEmail = useDebounce(form.watch("email"), 500)
+
+  useQuery(["isEmailExists", debouncedEmail], () => isEmailExists(debouncedEmail), {
+    enabled: !!debouncedEmail,
+    onSuccess: (data) => {
+      if (data) {
+        form.setError("email", {
+          type: "validate",
+          message: "Email already exists",
+        })
+      }else{
+        form.clearErrors("email",)
+      }
     },
   })
 

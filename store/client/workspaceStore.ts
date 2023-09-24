@@ -8,13 +8,23 @@ type Workspace = {
 }
 
 interface WorkspaceStore {
-  workspace: Workspace 
+  workspace: Workspace | null;
   setWorkspace: (workspace: Workspace) => void
 }
 
 const useWorkspaceStore = create<WorkspaceStore>()(
   devtools((set, get) => ({
-    workspace: Cookies.get("workspace") ? JSON.parse(Cookies.get("workspace") as string) : null,
+    workspace: (() => {
+      const workspaceCookie = Cookies.get("workspace");
+      if (workspaceCookie) {
+        try {
+          return JSON.parse(workspaceCookie) as Workspace;
+        } catch (error) {
+          console.error("Error parsing workspace cookie:", error);
+        }
+      }
+      return null;
+    })(),
     setWorkspace: (workspace) =>
       set((state) => {
         // Update the state

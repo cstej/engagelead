@@ -43,7 +43,7 @@ type Props = {}
 export default function MemberInviteModal({}: Props) {
   const [showDialog, setShowDialog] = React.useState(false)
 
-  const workspace = useWorkspaceStore((state) => state.workspace)
+  const { workspace } = useWorkspaceStore()
 
   const inviteMemberFormSchema = z.object({
     email: z.string().email(),
@@ -61,7 +61,7 @@ export default function MemberInviteModal({}: Props) {
   const handleInviteMemberSubmit = async (
     value: z.infer<typeof inviteMemberFormSchema>
   ) => {
-    const result = await inviteMember({ ...value, workspaceId: workspace?.id })
+    const result = await inviteMember({ ...value, workspaceId:  workspace?.id ?? ""})
 
     if (result?.error) {
       toast({

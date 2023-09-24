@@ -1,8 +1,10 @@
 "use client"
 
+
 import Link from "next/link"
-import { redirect, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useDebounce } from "@uidotdev/usehooks"
 import { Info } from "lucide-react"
 import { signIn, useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
@@ -27,38 +29,29 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/icons"
+import { useQuery } from "@tanstack/react-query"
 
 type Props = {}
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .email()
-    .refine(
-      async (email) => {
-        if (!email.match(/^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-          return false
-        }
-        return isEmailExists(email)
-      },
-      {
-        message: "Oops! This email is not registered.",
-      }
-    ),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-})
-
-const isEmailExists = async (email: string) => {
-  const res = await fetch(`/api/user/${email}`)
-  if (res.status === 200) {
-    const { user } = await res.json()
-    return user
-  }
-}
-
 const Login = (props: Props) => {
+
+
+  const isEmailExists = async (email: string) => {
+    const res = await fetch(`/api/user/${email}`)
+    if (res.status === 200) {
+      const { isUser } = (await res.json()) as { isUser: boolean }
+      return isUser
+    }
+  }
+
+  const formSchema = z.object({
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+  })
+
+
+
   const searchParams = useSearchParams()
   const callbackUrl = searchParams?.get("from") ?? "/"
 
@@ -69,6 +62,25 @@ const Login = (props: Props) => {
       password: "",
     },
   })
+
+
+  const debouncedEmail = useDebounce(form.watch("email"), 1000)
+
+  useQuery(["isEmailExists", debouncedEmail], () => isEmailExists(debouncedEmail), {
+    enabled: !!debouncedEmail,
+    onSuccess: (data) => {
+      if (!data) {
+        form.setError("email", {
+          type: "validate",
+          message: "Oops! Looks like you don't have an account yet.",
+        })
+      }else{
+        form.clearErrors("email")
+      }
+    },
+  })
+  
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -126,7 +138,7 @@ const Login = (props: Props) => {
                 </span>
               </div>
             </div>
-            
+
             {/* Login Form Start Here */}
 
             <Form {...form}>

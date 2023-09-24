@@ -20,6 +20,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
 
 type Workspaces = [
   {
@@ -33,22 +35,28 @@ export function WorkspaceSwitcher() {
 
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(workspace?.id)
-  const [workspaces, setWorkspaces] = React.useState<Workspaces>()
-  const [isLoading, setIsLoading] = React.useState(true)
 
-  React.useEffect(() => {
-    async function fetchdata() {
-      const res = await fetch("/api/workspaces")
-
-      const { data } = await res.json()
-      setWorkspaces(data)
-      setIsLoading(false)
+  const { data: workspaces, isLoading, error } = useQuery<Workspaces>(
+    ["workspaces"],
+    async () => {
+      const res = await fetch("/api/workspaces");
+      if (!res.ok) {
+        throw new Error("Failed to fetch workspaces");
+      }
+      const data = await res.json() as { data: Workspaces | null };
+      if (data.data === null) {
+        throw new Error("Failed to fetch workspaces");
+      }
+      return data.data;
     }
-    fetchdata()
-  }, [])
+  );
 
   if (isLoading) {
     return <Skeleton className="h-9 w-[200px]" />
+  }
+
+  if (error) {
+    return <div className="h-9 w-[200px]">Something went wrong</div>
   }
 
   return (

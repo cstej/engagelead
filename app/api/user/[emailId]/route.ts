@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 import { prisma } from "@/lib/prisma"
+import { getErrorMessage } from "@/lib/exceptions/errors"
 
 /**
  *
@@ -11,7 +12,7 @@ import { prisma } from "@/lib/prisma"
 async function GetUserByEmail(
   req: NextRequest,
   { params }: { params: { emailId: string } }
-) {
+): Promise<NextResponse> {
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -20,10 +21,11 @@ async function GetUserByEmail(
     })
 
     return NextResponse.json({
-      user: !!user,
+      isUser: !!user,
     })
   } catch (error) {
     console.log(error)
+    return NextResponse.json({ message: getErrorMessage(error) }, { status: 500 })
   }
 }
 

@@ -1,28 +1,29 @@
-import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
+import { NextResponse, type NextRequest } from "next/server"
+import { HttpStatusCode } from "axios"
 import _ from "lodash"
 import { getServerSession } from "next-auth"
 import { z } from "zod"
 
 import { authOptions } from "@/lib/auth"
+import { getErrorMessage } from "@/lib/exceptions/errors"
 import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
 
-// Define a schema for workspace creation data
-const createWorkspaceSchema = z.object({
-  name: z.string().min(2).max(50),
-})
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const schema = z.object({
+    name: z.string().min(3).max(50),
+  })
 
-export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
-      return new NextResponse(null, {
-        status: 401,
-        statusText: "Unauthorized",
-      })
+      return NextResponse.json(
+        { message: "Unauthorized Request" },
+        { status: HttpStatusCode.Unauthorized }
+      )
     }
 
-    const data = createWorkspaceSchema.parse(await req.json())
+    const data = schema.parse(await req.json())
 
     const createdWorkspace = await prisma.workspace.create({
       data: {
@@ -35,37 +36,39 @@ export async function POST(req: NextRequest) {
               },
             },
             role: "ADMIN",
-
           },
         },
       },
     })
 
     revalidatePath("/app/")
-    return new NextResponse(JSON.stringify({ data: createdWorkspace }), {
-      status: 201,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    return NextResponse.json({ data: createdWorkspace })
   } catch (error) {
     console.log(error)
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 422 })
+      return NextResponse.json(
+        { error: error.issues },
+        { status: HttpStatusCode.UnprocessableEntity }
+      )
     }
+
+    return NextResponse.json(
+      { message: getErrorMessage(error) },
+      { status: HttpStatusCode.InternalServerError }
+    )
   }
 }
 
 // this api is used for geting all workspace  by user id for zustland store
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {
-      return new NextResponse(null, {
-        status: 401,
-        statusText: "Unauthorized",
-      })
+      return NextResponse.json(
+        { message: "Unauthorized Request" },
+        { status: HttpStatusCode.Unauthorized }
+      )
     }
     const workspace = await prisma.workspaceMember.findMany({
       where: {
@@ -83,18 +86,21 @@ export async function GET(req: NextRequest) {
         workspace: {
           createdAt: "asc",
         },
-    
       },
     })
 
     const workspaceData = _.map(workspace, (item) => ({
       id: _.get(item, "workspace.id"),
       name: _.get(item, "workspace.name"),
-      // createdAt: _.get(item, "workspace.createdAt"),
     }))
 
-    return NextResponse.json({ data: workspaceData })
+    const data = workspaceData.length > 0 ? workspaceData : null
+
+    return NextResponse.json({ data })
   } catch (error) {
-    console.log(error)
+    return NextResponse.json(
+      { message: getErrorMessage(error) },
+      { status: HttpStatusCode.InternalServerError }
+    )
   }
 }

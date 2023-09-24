@@ -264,8 +264,11 @@ export default function AddLead({}: Props) {
                 </FormItem>
               )}
             />
+         
 
-            {customFieldDefination?.map((fieldDefination) => (
+            {
+          
+            customFieldDefination?.map((fieldDefination) => (
               <>
                 {fieldDefination.type === "Text" && (
                   <FormField
@@ -277,9 +280,12 @@ export default function AddLead({}: Props) {
                         <FormLabel>{fieldDefination.label}</FormLabel>
                         <FormControl>
                           <Input
+                          type="text"
                             className="h-10"
                             placeholder={`Enter ${fieldDefination.label}...`}
                             {...field}
+                            value={field.value as string}
+              
                           />
                         </FormControl>
                         <FormMessage />
@@ -301,6 +307,8 @@ export default function AddLead({}: Props) {
                             className="h-10"
                             placeholder={`Enter ${fieldDefination.label}...`}
                             {...field}
+                          value={field.value as number} 
+                          
                           />
                         </FormControl>
                         <FormMessage />
@@ -328,7 +336,7 @@ export default function AddLead({}: Props) {
                                 )}
                               >
                                 {field.value ? (
-                                  format(field.value, "PPP")
+                                  format(field.value as Date, "PPP")
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
@@ -339,7 +347,7 @@ export default function AddLead({}: Props) {
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
-                              selected={field.value}
+                              selected={field.value as Date}
                               onSelect={field.onChange}
                               initialFocus
                             />

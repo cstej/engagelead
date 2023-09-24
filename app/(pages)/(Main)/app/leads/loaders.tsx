@@ -13,13 +13,13 @@ export async function getLeads() {
       return { message: "User and workspace not found" }
     }
 
-    const pipeline = [
-      {
-        $match: {
-          workspaceId: { $oid: uw.workspaceId },
-        },
+    const pipeline = []
+
+    pipeline.push({
+      $match: {
+        workspaceId: { $oid: uw.workspaceId },
       },
-    ]
+    })
 
     if (uw.role === Role.SALES_AGENT) {
       pipeline.push({

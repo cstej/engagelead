@@ -10,7 +10,7 @@ type Props = {
 const Breadcrumb = (props: Props) => {
   return (
     <div className="mb-4 flex items-center space-x-1 text-sm text-muted-foreground">
-      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+      <div className="truncate">
         {props.root}
       </div>
       {props.items?.map((name) => {
