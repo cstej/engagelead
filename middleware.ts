@@ -36,9 +36,11 @@ export default withAuth(
       }
 
       if (isDashboardPage) {
-        const workspace = cookies().get("workspace")?.value
 
-        if (workspace === "null" || workspace === "{}" || !workspace) {
+
+        const workspace = cookies().has("workspace") ? cookies().get("workspace")?.value : null
+
+        if (!workspace) {
           // If workspace information is missing or empty, fetch it.
 
           const res = await fetch(
@@ -53,22 +55,18 @@ export default withAuth(
             }
           )
 
+          if(res.status === 404){
+            return NextResponse.redirect(new URL("/workspace", req.url))
+          }
+
           if (res.status === 200) {
-            const cw = await res.json()
-
-            if (!cw) {
-              console.log("redirecting to workspace setup")
-              // If workspace information is still missing, redirect to workspace setup.
-              return NextResponse.redirect(new URL("/workspace", req.url))
-            }
-
-            if (cw) {
-              console.log("setting workspace cookie")
+            const data = await res.json()
+          
               // If workspace information is available, set it as a cookie and continue.
               const response = NextResponse.redirect(req.url)
-              response.cookies.set("workspace", JSON.stringify(cw))
+              response.cookies.set("workspace", JSON.stringify(data))
               return response
-            }
+            
           }
         }
       }

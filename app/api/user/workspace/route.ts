@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/sessions";
+import { getErrorMessage } from "@/lib/exceptions/errors";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest,) : Promise<NextResponse> {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return new NextResponse(null, {
-        status: 401,
-        statusText: "Unauthorized",
-      });
+     return NextResponse.json({ message: "Unauthorized Request" }, { status: 401 })
     }
 
     const workspace = await prisma.workspaceMember.findFirst({
@@ -32,18 +30,12 @@ export async function GET(req: NextRequest, res: NextResponse) {
     });
 
     if (!workspace) {
-      return new NextResponse(null, {
-        status: 404,
-        statusText: "Not Found",
-      });
+      return NextResponse.json({ message: "No workspace found" }, { status: 404 });
     }
 
     return NextResponse.json(workspace.workspace);
   } catch (error) {
     console.error("Error getting workspace:", error);
-    return new NextResponse(null, {
-      status: 500,
-      statusText: "Internal Server Error",
-    });
+    return NextResponse.json({ message: getErrorMessage(error) }, { status: 500 });
   }
 }
