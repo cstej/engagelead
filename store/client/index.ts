@@ -29,7 +29,7 @@ const useWorkspaceMembersStore = create<WorkspaceMembersStore>()(
 )
 
 const fetchMembers = async () => {
-  const response = await fetch("/api/workspaces/users")
+  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/workspaces/users`)
   const data = (await response.json()) as Member[]
   useWorkspaceMembersStore.getState().setMembers(data)
 }

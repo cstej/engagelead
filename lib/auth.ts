@@ -1,4 +1,4 @@
-import { cookies } from "next/headers"
+
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { User as UserModel } from "@prisma/client"
 import bcrypt from "bcrypt"
