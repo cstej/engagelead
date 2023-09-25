@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { User } from "next-auth"
 import { signOut } from "next-auth/react"
 
 import {
@@ -12,12 +11,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UserAvatar } from "./user-avatar"
+import Cookies from "js-cookie"
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
   user: any
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
+
+  const handleSignOut = () => {
+    signOut({
+      callbackUrl: `${window.location.origin}/`,
+    },
+    )
+    Cookies.remove("workspace")
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -50,13 +59,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
-          onSelect={(event) => {
-            event.preventDefault()
-            signOut({
-              callbackUrl: `${window.location.origin}/login`,
-              
-            })
-          }}
+          onSelect={handleSignOut}
         >
           Sign out
         </DropdownMenuItem>
