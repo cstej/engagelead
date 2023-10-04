@@ -1,15 +1,29 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "LeadStacker",
-  description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
+  name: "engagelead",
+ 
   mainNav: [
     {
-      title: "Home",
-      href: "/",
+      title: "Features",
+      href: "/features",
+      disabled: true,
+      
+    },
+    {
+      title: "Integrations",
+      href: "/integrations",
     },
 
+    {
+      title: "Pricing",
+      href: "/pricing",
+    },
+
+    {
+      title: "Contact",
+      href: "/contact",
+    },
   ],
   dashboardMainNav:[
     {

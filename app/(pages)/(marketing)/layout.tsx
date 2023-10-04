@@ -3,6 +3,7 @@ import React from "react"
 import { SiteHeader } from "@/components/header/site-header"
 import { SiteFooter } from "@/components/site-footer"
 
+
 interface MarketingLayoutProps {
   children: React.ReactNode
 }
@@ -10,11 +11,16 @@ interface MarketingLayoutProps {
 export default async function MarketingLayout({
   children,
 }: MarketingLayoutProps) {
+  
+  
+  
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
+
       <main className="flex-1">{children}</main>
-      <SiteFooter />
+
+     {<SiteFooter />} 
     </div>
   )
 }

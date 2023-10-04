@@ -37,8 +37,8 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-import { leadSource, leadStatus } from "../data/data"
 import { useWorkspaceMembersStore } from "@/store/client"
+import { leadSource, leadStatus } from "../_components/LeadTable"
 
 type Props = {}
 

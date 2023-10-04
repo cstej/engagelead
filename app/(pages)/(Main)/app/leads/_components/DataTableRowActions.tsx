@@ -5,6 +5,8 @@ import { useWorkspaceMembersStore } from "@/store/client"
 import { CheckIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
 
+import { Lead } from "@/types/lead"
+import { getErrorMessage } from "@/lib/exceptions/errors"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,10 +30,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { assignLeadToUser } from "../actions"
 import { toast } from "@/components/ui/use-toast"
-import { getErrorMessage } from "@/lib/exceptions/errors"
-import { Lead } from "@/types/lead"
+
+import { assignLeadToUser } from "../actions"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -45,8 +46,7 @@ export function DataTableRowActions<TData>({
   const { members } = useWorkspaceMembersStore()
   const [open, setOpen] = React.useState(false)
 
-  async function handleAssignToChange(value : string) {
-
+  async function handleAssignToChange(value: string) {
     try {
       await assignLeadToUser(lead.id, value)
       toast({
@@ -58,16 +58,11 @@ export function DataTableRowActions<TData>({
       toast({
         title: "Something went wrong",
         description: getErrorMessage(error),
-        variant:"destructive"
+        variant: "destructive",
       })
-    }finally{
+    } finally {
       setOpen(false)
     }
-
- 
-  
-   
-
   }
 
   return (
@@ -87,9 +82,7 @@ export function DataTableRowActions<TData>({
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Assign to</DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="p-0">
-            <Command
-              defaultValue={lead.assigned_to._id}
-            >
+            <Command defaultValue={lead.assigned_to._id}>
               <CommandInput
                 placeholder="Search members..."
                 autoFocus={true}

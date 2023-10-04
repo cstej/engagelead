@@ -1,6 +1,5 @@
 import React from "react"
 import { Metadata } from "next"
-import { Separator } from "@/components/ui/separator"
 
 
 import { IntegrationCard } from "../_components/integration-card"
@@ -20,7 +19,6 @@ const Integration = (props: Props) => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* <Breadcrumb root={"Dashboard"} items={["Integration"]} /> */}
       <div>
         <p className="pb-8 text-2xl font-semibold tracking-wide">Integration</p>
         {/* <Separator /> */}

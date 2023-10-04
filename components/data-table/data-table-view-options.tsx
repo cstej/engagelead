@@ -2,7 +2,7 @@
 
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { MixerHorizontalIcon } from "@radix-ui/react-icons"
-import { Table } from "@tanstack/react-table"
+import { type Table } from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -42,7 +42,6 @@ export function DataTableViewOptions<TData>({
               typeof column.accessorFn !== "undefined" && column.getCanHide()
           )
           .map((column) => {
-            const headerName = column.id.charAt(0).toUpperCase() + column.id.slice(1).replace('_', ' ')
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
@@ -50,8 +49,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-               {headerName}
-               
+                {column.id}
               </DropdownMenuCheckboxItem>
             )
           })}

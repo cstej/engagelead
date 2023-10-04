@@ -1,10 +1,11 @@
 import { cookies } from "next/headers"
-import { NextResponse } from "next/server"
+import {type NextRequest, NextResponse } from "next/server"
 import { getToken } from "next-auth/jwt"
 import { withAuth } from "next-auth/middleware"
 
 export default withAuth(
-  async function middleware(req) {
+  async function middleware(req : NextRequest) {
+
     try {
       const isDashboardPage = req.nextUrl.pathname.startsWith("/app")
       const token = await getToken({ req })
@@ -70,9 +71,14 @@ export default withAuth(
           }
         }
       }
+
+     
     } catch (err) {
       console.log(err)
     }
+
+    
+   
   },
   {
     callbacks: {
