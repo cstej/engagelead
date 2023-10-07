@@ -17,7 +17,7 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-40 w-full bg-background  shadow-sm ">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <Nav items={siteConfig.mainNav} />
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex flex-1 items-center justify-end space-x-8">
           {/* Navbar Menu */}
           <div className="hidden md:block">
             {siteConfig.mainNav?.length ? (
@@ -28,8 +28,9 @@ export async function SiteHeader() {
                       <Link
                         key={index}
                         href={item.href}
+                        aria-disabled={item.disabled}
                         className={cn(
-                          "flex items-center text-sm font-medium text-muted-foreground",
+                          "flex items-center text-sm font-medium ",
                           item.disabled && "cursor-not-allowed opacity-80"
                         )}
                       >

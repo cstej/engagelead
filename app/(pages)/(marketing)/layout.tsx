@@ -13,7 +13,7 @@ export default async function MarketingLayout({
 }: MarketingLayoutProps) {
   
   
-  
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />

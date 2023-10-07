@@ -1,9 +1,9 @@
 "use client"
 
-
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { Info } from "lucide-react"
 import { signIn, useSession } from "next-auth/react"
@@ -30,13 +30,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
-import { useQuery } from "@tanstack/react-query"
 
 type Props = {}
 
 const Login = (props: Props) => {
-
-
   const isEmailExists = async (email: string) => {
     const res = await fetch(`/api/user/${email}`)
     if (res.status === 200) {
@@ -50,8 +47,6 @@ const Login = (props: Props) => {
     password: z.string().min(8, "Password must be at least 8 characters long"),
   })
 
-
-
   const searchParams = useSearchParams()
   const callbackUrl = searchParams?.get("from") ?? "/"
 
@@ -63,24 +58,25 @@ const Login = (props: Props) => {
     },
   })
 
-
   const debouncedEmail = useDebounce(form.watch("email"), 1000)
 
-  useQuery(["isEmailExists", debouncedEmail], () => isEmailExists(debouncedEmail), {
-    enabled: !!debouncedEmail,
-    onSuccess: (data) => {
-      if (!data) {
-        form.setError("email", {
-          type: "validate",
-          message: "Oops! Looks like you don't have an account yet.",
-        })
-      }else{
-        form.clearErrors("email")
-      }
-    },
-  })
-  
-
+  useQuery(
+    ["isEmailExists", debouncedEmail],
+    () => isEmailExists(debouncedEmail),
+    {
+      enabled: !!debouncedEmail,
+      onSuccess: (data) => {
+        if (!data) {
+          form.setError("email", {
+            type: "validate",
+            message: "Oops! Looks like you don't have an account yet.",
+          })
+        } else {
+          form.clearErrors("email")
+        }
+      },
+    }
+  )
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -93,21 +89,10 @@ const Login = (props: Props) => {
   }
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Link
-        href="/"
-        className={cn(
-          buttonVariants({ variant: "outline" }),
-          "absolute left-4 top-4 md:left-8 md:top-8"
-        )}
-      >
-        <>
-          <Icons.chevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </>
-      </Link>
-      <div className=" w-full sm:max-w-lg">
-        <Card>
+    <div className="relative flex h-[80vh] w-screen flex-col items-center justify-center overflow-hidden">
+  <div className="absolute inset-0 -z-40 bg-[url(https://play.tailwindcss.com/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] "></div>
+      <div className="container grid max-w-xl items-center gap-8  ">
+        <Card className=" shadow-md">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
@@ -115,11 +100,7 @@ const Login = (props: Props) => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-2 gap-6">
-              <Button variant="outline">
-                <Icons.gitHub className="mr-2 h-4 w-4" />
-                Github
-              </Button>
+            <div className="grid grid-cols-1 gap-6">
               <Button
                 onClick={() => signIn("google", { callbackUrl })}
                 variant="outline"
@@ -189,9 +170,19 @@ const Login = (props: Props) => {
               Login
             </Button>
           </CardFooter>
+          <div className=" flex flex-wrap items-center space-x-2 p-6 pt-0">
+          <div className="flex-1 text-sm text-muted-foreground">
 
-          {/* Login Form End Here */}
+            Don&apos;t have an account? <Link className="font-medium hover:underline" href="/signup">Sign Up</Link>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <Link className="font-medium hover:underline" href="/forgot-password">Forgot Password?</Link>
+            </div>
+        </div>
+          
         </Card>
+
+     
       </div>
     </div>
   )

@@ -97,21 +97,10 @@ const SignupPage = (props: Props) => {
     } catch (error) {}
   }
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Link
-        href="/"
-        className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "absolute left-4 top-4 md:left-8 md:top-8"
-        )}
-      >
-        <>
-          <Icons.chevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </>
-      </Link>
-      <div className=" w-full sm:max-w-lg">
-        <Card>
+    <div className="relative flex h-[80vh] w-screen flex-col items-center justify-center">
+       <div className="absolute inset-0 -z-40 bg-[url(https://play.tailwindcss.com/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] "></div>
+     <div className="container grid max-w-xl items-center gap-8  ">
+        <Card className="shadow-md">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Create an account</CardTitle>
             <CardDescription>
@@ -119,12 +108,9 @@ const SignupPage = (props: Props) => {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div className="grid grid-cols-2 gap-6">
-              <Button variant="outline">
-                <Icons.gitHub className="mr-2 h-4 w-4" />
-                Github
-              </Button>
-              <Button variant="outline">
+            <div className="grid grid-cols-1 gap-6">
+              
+              <Button variant="outline" className="w-full">
                 <Icons.google className="mr-2 h-4 w-4" />
                 Google
               </Button>
@@ -212,6 +198,17 @@ const SignupPage = (props: Props) => {
               Create account
             </Button>
           </CardFooter>
+
+
+          <div className=" flex flex-col flex-wrap  space-y-2 p-6 pt-0">
+          <div className=" text-sm text-muted-foreground">
+
+            Already have an account? <Link className="font-medium hover:underline" href="/login">Login</Link>
+          </div>
+          <div className=" text-xs text-muted-foreground">
+          By signing up, you agree to our Terms of Service and our Privacy Policy
+          </div>
+        </div>
 
           {/* Signup Form End Here */}
         </Card>

@@ -1,7 +1,7 @@
 import "@/styles/globals.css"
 
 import { Metadata } from "next"
-import { Inter, Roboto } from "next/font/google"
+import {  Lexend } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
 import NextTopLoader from "nextjs-toploader"
 
@@ -13,7 +13,7 @@ import AuthProvider from "@/components/auth-provider"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const inter = Lexend({ subsets: ["latin"], variable: "--font-sans" })
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,

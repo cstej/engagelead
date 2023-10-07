@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 const layout = (props: Props) => {
-  return <div className="min-h-screen">{props.children}</div>
+  return < >{props.children}</>
 }
 
 export default layout
