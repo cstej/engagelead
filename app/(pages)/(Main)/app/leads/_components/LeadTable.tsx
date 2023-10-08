@@ -99,7 +99,7 @@ export default function LeadTable({ data, pageCount }: Props) {
         cell: ({ row }) => (
           <div className="capitalize">
             <LeadDrawer key={row.original.id} lead={row.original}>
-              <Badge variant={"outline"}>{row.getValue("name")}</Badge>{" "}
+              <Badge variant={"default"} >{row.getValue("name")}</Badge>{" "}
             </LeadDrawer>
           </div>
         ),

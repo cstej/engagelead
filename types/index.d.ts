@@ -16,17 +16,11 @@ export type SidebarNavItem = {
   title: string
   disabled?: boolean
   external?: boolean
-  icon?: keyof typeof Icons
-} & (
-  | {
-      href: string
-      items?: never
-    }
-  | {
-      href?: string
-      items: NavLink[]
-    }
-)
+  icon?: React.node
+  href?: string
+  }
+
+  
 
 export type SiteConfig = {
   name: string
@@ -44,6 +38,7 @@ export type SiteConfig = {
 export type DashboardConfig = {
   mainNav: MainNavItem[]
   sidebarNav: SidebarNavItem[]
+  sidebarNavMobile: SidebarNavItem[]
 }
 
 

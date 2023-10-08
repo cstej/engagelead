@@ -12,9 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { UserAvatar } from "./user-avatar"
 import Cookies from "js-cookie"
+import { Separator } from "@/components/ui/separator"
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
-  user: any
+  user: {
+    name?: string
+    image?: string
+    email?: string
+  }
 }
 
 export function UserAccountNav({ user }: UserAccountNavProps) {
@@ -27,21 +32,24 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
     Cookies.remove("workspace")
   }
 
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <UserAvatar
-          user={{ name: user.name || null, image: user.image || null }}
+          user={{ name: user.name || "", image: user?.image || undefined }}
           className="h-8 w-8"
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <div className="flex items-center justify-start gap-2 p-2">
+      <DropdownMenuContent align="start">
+        <div className="flex items-center justify-start gap-2 rounded-md  border-transparent bg-secondary p-2 text-secondary-foreground hover:bg-secondary/80">
           <div className="flex flex-col space-y-1 leading-none">
-            {user.name && <p className="font-medium">{user.name}</p>}
-            {user.email && (
+            {user?.name && <p className="text-sm font-semibold ">{user?.name}</p>}
+          <Separator className="my-2"/>
+            {user?.email && (
               <p className="w-[200px] truncate text-sm text-muted-foreground">
-                {user.email}
+                {user?.email}
               </p>
             )}
           </div>

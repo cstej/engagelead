@@ -3,9 +3,12 @@
 import * as React from "react"
 import useWorkspaceStore from "@/store/client/workspaceStore"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -20,8 +23,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
 
 type Workspaces = [
   {
@@ -36,51 +37,47 @@ export function WorkspaceSwitcher() {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(workspace?.id)
 
-  const { data: workspaces, isLoading, error } = useQuery<Workspaces>(
-    ["workspaces"],
-    async () => {
-      const res = await fetch("/api/workspaces");
-      if (!res.ok) {
-        throw new Error("Failed to fetch workspaces");
-      }
-      const data = await res.json() as { data: Workspaces | null };
-      if (data.data === null) {
-        throw new Error("Failed to fetch workspaces");
-      }
-      return data.data;
+  const {
+    data: workspaces,
+    isLoading,
+    error,
+  } = useQuery<Workspaces>(["workspaces"], async () => {
+    const res = await fetch("/api/workspaces")
+    if (!res.ok) {
+      throw new Error("Failed to fetch workspaces")
     }
-  );
+    const data = (await res.json()) as { data: Workspaces | null }
+    if (data.data === null) {
+      throw new Error("Failed to fetch workspaces")
+    }
+    return data.data
+  })
 
   if (isLoading) {
-    return <Skeleton className="h-9 w-[200px]" />
+    return <Skeleton className="h-8 w-[100px] rounded-full" />
   }
 
   if (error) {
-    return <div className="h-9 w-[200px]">Something went wrong</div>
+    return <div className="h-9 ">Something went wrong</div>
   }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between "
-        >
-          <Avatar className="mr-2 h-5 w-5">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+        <div className="flex items-center">
+          <Badge
+            variant={"secondary"}
+            className="h-8 cursor-pointer rounded-full"
+          >
+            <span className="truncate">
+              {value
+                ? workspaces?.find((workspace) => workspace?.id === value)?.name
+                : "Select Workspace..."}
+            </span>
+          </Badge>
 
-          <span className="truncate">
-            {value
-              ? workspaces?.find((workspace) => workspace?.id === value)?.name
-              : "Select Workspace..."}
-          </span>
-
-          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 cursor-pointer " />
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
