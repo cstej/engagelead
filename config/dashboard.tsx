@@ -3,17 +3,7 @@ import { BarChart2, Cable, Cog, Home, MoreHorizontal } from "lucide-react"
 import { DashboardConfig } from "types"
 
 export const dashboardConfig: DashboardConfig = {
-  mainNav: [
-    {
-      title: "Documentation",
-      href: "/docs",
-    },
-    {
-      title: "Support",
-      href: "/support",
-      disabled: true,
-    },
-  ],
+
   sidebarNav: [
     {
       title: "Dashboard",

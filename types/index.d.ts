@@ -36,7 +36,6 @@ export type SiteConfig = {
 
 
 export type DashboardConfig = {
-  mainNav: MainNavItem[]
   sidebarNav: SidebarNavItem[]
   sidebarNavMobile: SidebarNavItem[]
 }

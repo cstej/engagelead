@@ -2,7 +2,7 @@ import React from "react"
 
 import MobileNav from "./_components/MobileNav"
 import { SideBar } from "./_components/SideBar"
-import { dashboardConfig } from "./config/dashboard"
+import { dashboardConfig } from "../../../../config/dashboard"
 
 type Props = {
   children: React.ReactNode

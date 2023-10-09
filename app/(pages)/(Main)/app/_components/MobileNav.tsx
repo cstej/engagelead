@@ -5,7 +5,7 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
-import { dashboardConfig } from "../config/dashboard"
+import { dashboardConfig } from "../../../../../config/dashboard"
 import { usePathname } from "next/navigation"
 
 type Props = {}

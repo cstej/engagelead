@@ -29,11 +29,14 @@ const useWorkspaceMembersStore = create<WorkspaceMembersStore>()(
 )
 
 const fetchMembers = async () => {
-  const response = await fetch("/api/workspaces/users")
-  const data = (await response.json()) as Member[]
-  useWorkspaceMembersStore.getState().setMembers(data)
+  try {
+    const response = await fetch("/api/workspaces/users")
+    const data = (await response.json()) as Member[]
+    useWorkspaceMembersStore.getState().setMembers(data)
+  } catch (error) {
+    console.error("Error fetching members:", error)
+  }
 }
-
 fetchMembers()
 
 export { useWorkspaceMembersStore }
