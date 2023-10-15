@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useWorkspaceMembersStore } from "@/store/client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CalendarIcon, UploadIcon } from "@radix-ui/react-icons"
 import { QueryKey, useQuery } from "@tanstack/react-query"
@@ -37,8 +38,8 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 
-import { useWorkspaceMembersStore } from "@/store/client"
 import { leadSource, leadStatus } from "../_components/LeadTable"
+import PageHeader from "../../_components/PageHeader"
 
 type Props = {}
 
@@ -66,7 +67,7 @@ export default function AddLead({}: Props) {
     CustomFieldDefination[]
   >([])
 
-  const {members,} = useWorkspaceMembersStore()
+  const { members } = useWorkspaceMembersStore()
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const router = useRouter()
@@ -95,7 +96,6 @@ export default function AddLead({}: Props) {
       setCustomFieldDefination(data)
     }
   }, [data])
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -127,24 +127,20 @@ export default function AddLead({}: Props) {
     }
   }
   return (
-    <div className="flex min-h-screen flex-col space-y-6">
-      <div className="flex justify-between">
-        <div>
-          <h3 className="text-lg font-medium">New Lead</h3>
-          <p className="text-sm text-muted-foreground">
-            Add potential customers to your database.
-          </p>
-        </div>
-        <div className="flex gap-4">
-          <Button variant={"outline"}>
+    <>
+      <PageHeader
+        title="New Lead"
+        description="Add potential customers to your database."
+        buttons={[
+          <Button size={"sm"} variant={"outline"}>
             {" "}
             <UploadIcon className="mr-2" /> Bulk Upload
-          </Button>
-        </div>
-      </div>
-      <Separator />
-      <div>
-        <Form {...form}>
+          </Button>,
+        ]}
+      />
+
+      <main className="mx-auto w-[786px] rounded-md border">
+        <Form {...form} >
           <form
             className="grid grid-cols-2 gap-4"
             onSubmit={form.handleSubmit(onSubmit)}
@@ -264,11 +260,8 @@ export default function AddLead({}: Props) {
                 </FormItem>
               )}
             />
-         
 
-            {
-          
-            customFieldDefination?.map((fieldDefination) => (
+            {customFieldDefination?.map((fieldDefination) => (
               <>
                 {fieldDefination.type === "Text" && (
                   <FormField
@@ -280,12 +273,11 @@ export default function AddLead({}: Props) {
                         <FormLabel>{fieldDefination.label}</FormLabel>
                         <FormControl>
                           <Input
-                          type="text"
+                            type="text"
                             className="h-10"
                             placeholder={`Enter ${fieldDefination.label}...`}
                             {...field}
                             value={field.value as string}
-              
                           />
                         </FormControl>
                         <FormMessage />
@@ -307,8 +299,7 @@ export default function AddLead({}: Props) {
                             className="h-10"
                             placeholder={`Enter ${fieldDefination.label}...`}
                             {...field}
-                          value={field.value as number} 
-                          
+                            value={field.value as number}
                           />
                         </FormControl>
                         <FormMessage />
@@ -373,7 +364,7 @@ export default function AddLead({}: Props) {
             </div>
           </form>
         </Form>
-      </div>
-    </div>
+      </main>
+    </>
   )
 }

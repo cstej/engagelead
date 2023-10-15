@@ -2,13 +2,13 @@ import Link from "next/link"
 import { Bot } from "lucide-react"
 import { getServerSession } from "next-auth"
 
-import { NavItem } from "@/types/nav"
+import { NavItem } from "@/types"
 import { siteConfig } from "@/config/site"
 import { authOptions } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
-import { SignoutBtn } from "./SignOutBtn"
+import { SignoutBtn } from "./sign-out-btn"
 
 export async function SiteHeader() {
   const session = await getServerSession(authOptions)

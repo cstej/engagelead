@@ -6,7 +6,6 @@ import { authOptions } from "@/lib/auth"
 import { getErrorMessage } from "@/lib/exceptions/errors"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUserAndWorkspace } from "@/lib/sessions"
-import { Lead } from "@/types/lead"
 import { HttpStatusCode } from "axios"
 
 const createLeadSchema = z.object({

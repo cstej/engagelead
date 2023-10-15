@@ -1,4 +1,5 @@
 "use client"
+
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type {
@@ -20,6 +21,8 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
+import { useDebounce } from "@uidotdev/usehooks"
+import { is } from "date-fns/locale"
 
 import {
   Table,
@@ -29,11 +32,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { Skeleton } from "../ui/skeleton"
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
-import { useDebounce } from "@uidotdev/usehooks"
 
 interface DataTableProps<TData, TValue> {
+  isLoading: boolean
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   pageCount: number
@@ -42,6 +47,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
+  isLoading,
   columns,
   data,
   pageCount,
@@ -247,7 +253,7 @@ export function DataTable<TData, TValue>({
       />
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-primary-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -282,6 +288,16 @@ export function DataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
+            ) : isLoading ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <TableRow key={i}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>
+                      <Skeleton className="h-6 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : (
               <TableRow>
                 <TableCell
@@ -295,7 +311,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination isLoading={isLoading} table={table} />
     </div>
   )
 }

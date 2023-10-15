@@ -4,7 +4,6 @@ import React from "react"
 import { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 
-import { Lead } from "@/types/lead"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTable } from "@/components/data-table/data-table"
@@ -12,10 +11,12 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { DataTableRowActions } from "@/app/(pages)/(Main)/app/leads/_components/DataTableRowActions"
 
 import LeadDrawer from "./LeadDrawer"
+import { Lead } from "@/server/schema/lead.schema"
 
 type Props = {
   data: Lead[]
   pageCount: number
+  isLoading: boolean
 }
 
 export const leadSource = [
@@ -52,7 +53,7 @@ export const leadStatus = [
   },
 ]
 
-export default function LeadTable({ data, pageCount }: Props) {
+export default function LeadTable({ data, pageCount,isLoading }: Props) {
   const [isPending, startTransition] = React.useTransition()
   const columns = React.useMemo<ColumnDef<Lead, undefined>[]>(
     () => [
@@ -168,8 +169,12 @@ export default function LeadTable({ data, pageCount }: Props) {
     ],
     []
   )
+
+
+
   return (
     <DataTable
+      isLoading={isLoading}
       columns={columns}
       data={data}
       pageCount={pageCount}

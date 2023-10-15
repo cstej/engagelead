@@ -1,7 +1,7 @@
 import React from "react"
 
 import { SiteHeader } from "@/components/header/site-header"
-import { SiteFooter } from "@/components/site-footer"
+
 
 
 interface MarketingLayoutProps {
@@ -19,8 +19,6 @@ export default async function MarketingLayout({
       <SiteHeader />
 
       <main className="flex-1">{children}</main>
-
-     {<SiteFooter />} 
     </div>
   )
 }

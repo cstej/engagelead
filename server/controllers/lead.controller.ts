@@ -1,30 +1,26 @@
+import { Ctx } from "@/types"
 import { Role } from "@prisma/client"
+import { TRPCError } from "@trpc/server"
 
-import { Lead } from "@/types/lead"
 import { getErrorMessage } from "@/lib/exceptions/errors"
 import { prisma } from "@/lib/prisma"
-import { getCurrentUserAndWorkspace } from "@/lib/sessions"
 
-export async function getLeads() {
+import { Lead } from "../schema/lead.schema"
+
+export const getAllLeads = async ({ ctx }: { ctx: Ctx }) => {
   try {
-    const uw = await getCurrentUserAndWorkspace()
-
-    if (!uw) {
-      return { message: "User and workspace not found" }
-    }
-
     const pipeline = []
 
     pipeline.push({
       $match: {
-        workspaceId: { $oid: uw.workspaceId },
+        workspaceId: { $oid: ctx.workspaceId },
       },
     })
 
-    if (uw.role === Role.SALES_AGENT) {
+    if (ctx.role === Role.SALES_AGENT) {
       pipeline.push({
         $match: {
-          assigned_to: { $oid: uw.userId },
+          assigned_to: { $oid: ctx.userId },
         },
       })
     }
@@ -59,7 +55,7 @@ export async function getLeads() {
           lead_source: 1,
           lead_status: 1,
 
-          workspaceId: 1,
+          workspaceId: { $toString: "$workspaceId" },
           assigned_to: {
             _id: { $toString: "$user._id" },
             name: { $toString: "$user.name" },
@@ -68,12 +64,13 @@ export async function getLeads() {
       }
     )
 
-    const leads = (await prisma.lead.aggregateRaw({
+    return (await prisma.lead.aggregateRaw({
       pipeline,
     })) as unknown as Lead[]
-
-    return { data: leads }
   } catch (error) {
-    return { message: getErrorMessage(error) }
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: getErrorMessage(error),
+    })
   }
 }

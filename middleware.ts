@@ -77,6 +77,18 @@ export default withAuth(
       console.log(err)
     }
 
+
+    const requestHeaders = new Headers(req.headers);
+
+  // Store current request pathname in a custom header
+  requestHeaders.set('x-pathname', req.nextUrl.pathname);
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
     
    
   },
@@ -87,6 +99,7 @@ export default withAuth(
         return true
       },
     },
+    
   }
 )
 

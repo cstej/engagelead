@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 
 import { authOptions } from "./auth"
 import { prisma } from "./prisma"
+import { UserAndWorkspace } from "@/types"
 
 export function getSession() {
   return getServerSession(authOptions)
@@ -57,15 +58,7 @@ export async function getCurrentUserAndWorkspace() {
       workspaceId: workspace.id,
       role: uw.role,
       workspaceName: uw.workspace.name,
-    }as {
-      userId: string;
-      userName: string;
-      emailVerified: Date;
-      email: string;
-      workspaceId: string;
-      role: string;
-      workspaceName: string;
-    }
+    }as UserAndWorkspace
   }
   return null
 }

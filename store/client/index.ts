@@ -27,7 +27,6 @@ const useWorkspaceMembersStore = create<WorkspaceMembersStore>()(
       }),
   }))
 )
-
 const fetchMembers = async () => {
   try {
     const response = await fetch("/api/workspaces/users")

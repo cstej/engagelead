@@ -1,4 +1,4 @@
-import { User } from "@prisma/client"
+import { Prisma, Role, User } from "@prisma/client"
 import type { Icon } from "lucide-react"
 
 import { Icons } from "@/components/icons"
@@ -59,4 +59,27 @@ export interface DataTableFilterableColumn<TData>
   options: Option[]
 }
 
+
+export type UserAndWorkspace = {
+  userId: string;
+  userName: string;
+  emailVerified: Date;
+  email: string;
+  workspaceId: string;
+  role: string;
+  workspaceName: string;
+}
+
+
+export type Ctx ={
+  userId: string;
+  userName: string | null | undefined;
+  emailVerified: Date | null;
+  email: string | null | undefined;
+  workspaceId: string;
+  role: Role;
+  workspaceName: string | null;
+  req: Request;
+  resHeaders: Headers;
+}
 

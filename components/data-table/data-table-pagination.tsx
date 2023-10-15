@@ -15,15 +15,42 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import { Skeleton } from "../ui/skeleton"
+
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
   pageSizeOptions?: number[]
+  isLoading?: boolean
 }
 
 export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [10, 20, 30, 40, 50],
+  isLoading,
 }: DataTablePaginationProps<TData>) {
+  if (isLoading)
+    return (
+      <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
+        <div className="flex-1">
+          <Skeleton className="h-8 w-40" />
+        </div>
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-8 w-[70px]" />
+          </div>
+          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            <Skeleton className="h-8 w-20" />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Skeleton className="hidden h-8 w-8 lg:block" />
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="hidden h-8 w-8 lg:block" />
+          </div>
+        </div>
+      </div>
+    )
   return (
     <div className="flex w-full flex-col items-center justify-between gap-4 overflow-auto px-2 py-1 sm:flex-row sm:gap-8">
       <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">

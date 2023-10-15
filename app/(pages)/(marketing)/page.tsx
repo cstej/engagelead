@@ -7,7 +7,8 @@ import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-export default function IndexPage() {
+export default async function IndexPage() {
+
   return (
     <>
       {/* Hero Section Start */}

@@ -20,6 +20,11 @@ export const dashboardConfig: DashboardConfig = {
       href: "/app/integration",
       icon: <Cable />,
     },
+    {
+      title: "Settings",
+      href: "/app/settings",
+      icon: <Cog />,
+    },
   ],
 
   sidebarNavMobile: [

@@ -1,16 +1,52 @@
-import React from "react"
+"use client"
 
+import React from "react"
+import Link from "next/link"
+import { DownloadIcon } from "@radix-ui/react-icons"
+
+import { trpc } from "@/lib/trpc/client"
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+
+import PageHeader from "../_components/PageHeader"
 import LeadTable from "./_components/LeadTable"
-import { getLeads } from "./loaders"
 
 type Props = {}
 
-export const revalidate = 0
+export default function LeadPage({}: Props) {
+  const { isLoading, data: leads } = trpc.allLead.useQuery(undefined, {
+    staleTime: 10000,
+    cacheTime: 10000,
+  })
 
-export default async function LeadPage({}: Props) {
-  const result = await getLeads()
+  return (
+    <>
+      <PageHeader
+        title="Manage Lead"
+        description=" Nurture potential customers with streamlined lead management."
+        buttons={[
+          <Button
+            size={"sm"}
+            variant={"outline"}
+            className="sm:h-9 sm:px-4 sm:py-2"
+          >
+            <DownloadIcon className="mr-2" /> Export
+          </Button>,
+          <Link
+            href={"/app/leads/add"}
+            className={cn(
+              buttonVariants({ variant: "default", size: "sm" }),
+              "sm:h-9 sm:px-4 sm:py-2"
+            )}
+          >
+            New Lead
+          </Link>,
+        ]}
+      />
 
-  const data = result?.data || []
-
-  return <LeadTable data={data} pageCount={1} />
+      <div className="px-2 md:px-5 ">
+        <LeadTable isLoading={isLoading} data={leads ?? []} pageCount={1} />
+      </div>
+    </>
+  )
 }

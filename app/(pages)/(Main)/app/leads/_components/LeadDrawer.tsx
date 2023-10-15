@@ -2,7 +2,7 @@ import React from "react"
 import { PersonIcon } from "@radix-ui/react-icons"
 import { Mail, Phone, UserCircle } from "lucide-react"
 
-import { Lead } from "@/types/lead"
+
 import { trpc } from "@/lib/trpc/client"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,6 +25,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Lead } from "@/server/schema/lead.schema"
 
 type Props = {
   children: React.ReactNode

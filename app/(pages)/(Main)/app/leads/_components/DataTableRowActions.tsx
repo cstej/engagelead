@@ -4,8 +4,6 @@ import React from "react"
 import { useWorkspaceMembersStore } from "@/store/client"
 import { CheckIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
-
-import { Lead } from "@/types/lead"
 import { getErrorMessage } from "@/lib/exceptions/errors"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -33,6 +31,7 @@ import {
 import { toast } from "@/components/ui/use-toast"
 
 import { assignLeadToUser } from "../actions"
+import { Lead } from "@/server/schema/lead.schema"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

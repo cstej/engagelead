@@ -1,31 +1,27 @@
 import { z } from "zod"
 
-import { prisma } from "@/lib/prisma"
-
-import { authProcedure, publicProcedure, router } from "./trpc"
+import { getAllLeads } from "./controllers/lead.controller"
+import {
+  getAllWorkSpaceByUser,
+  switchWorkspace,
+} from "./controllers/workspace.controller"
+import { authProcedure, router } from "./trpc"
 
 export const appRouter = router({
-  // public procedures
-
-
-  // authenticated procedures
-  getAllFieldDefination: authProcedure.input(z.string()).query(async ({ ctx, input }) => {
-
-    console.log( input)
-    return await prisma.fieldDefinition.findMany({
-      where: {
-        workspaceId: ctx.workspaceId,
-      },
-      select: {
-        id: true,
-        name: true,
-        type: true,
-        options: true,
-        workspaceId: true,
-        label: true,
-      },
-    })
+  allLead: authProcedure.query(async ({ ctx }) => getAllLeads({ ctx })),
+  allWorkspaceByUser: authProcedure.query(async ({ ctx }) => {
+    return getAllWorkSpaceByUser({ ctx })
   }),
+  switchWorkspace: authProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return switchWorkspace({ ctx, input })
+    }),
 })
 
 export type AppRouter = typeof appRouter

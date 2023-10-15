@@ -1,15 +1,14 @@
 "use client"
 
 import * as React from "react"
-import useWorkspaceStore from "@/store/client/workspaceStore"
+import { useRouter } from "next/navigation"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { useQueryClient } from "@tanstack/react-query"
+import Cookies from "js-cookie"
 
+import { trpc } from "@/lib/trpc/client"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -32,34 +31,51 @@ type Workspaces = [
 ]
 
 export function WorkspaceSwitcher() {
-  const { workspace, setWorkspace } = useWorkspaceStore()
-
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(workspace?.id)
+  const { refresh } = useRouter()
 
   const {
-    data: workspaces,
     isLoading,
-    error,
-  } = useQuery<Workspaces>(["workspaces"], async () => {
-    const res = await fetch("/api/workspaces")
-    if (!res.ok) {
-      throw new Error("Failed to fetch workspaces")
-    }
-    const data = (await res.json()) as { data: Workspaces | null }
-    if (data.data === null) {
-      throw new Error("Failed to fetch workspaces")
-    }
-    return data.data
+    isError,
+    data: workspaces,
+  } = trpc.allWorkspaceByUser.useQuery(undefined, {
+    staleTime: 10000,
+    cacheTime: 10000,
   })
+
+  const queryClient = useQueryClient()
+  const { mutate } = trpc.switchWorkspace.useMutation({
+    onSuccess: () => {
+      refresh()
+
+      queryClient.clear()
+    },
+  })
+
+  const [open, setOpen] = React.useState(false)
 
   if (isLoading) {
     return <Skeleton className="h-8 w-[100px] rounded-full" />
   }
 
-  if (error) {
+  if (isError) {
     return <div className="h-9 ">Something went wrong</div>
   }
+
+  const handleWorkspaceChange = async (workspace: {
+    id: string
+    name: string
+  }) => {
+    mutate(workspace)
+  }
+
+  const cookieValue = Cookies.get("workspace")
+
+  type CookieType = {
+    id: string
+    name: string
+  }
+
+  const cookie = cookieValue && (JSON.parse(cookieValue) as CookieType)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -70,8 +86,9 @@ export function WorkspaceSwitcher() {
             className="h-8 cursor-pointer rounded-full"
           >
             <span className="truncate">
-              {value
-                ? workspaces?.find((workspace) => workspace?.id === value)?.name
+              {cookie
+                ? workspaces?.find((workspace) => workspace?.id === cookie.id)
+                    ?.name
                 : "Select Workspace..."}
             </span>
           </Badge>
@@ -89,18 +106,18 @@ export function WorkspaceSwitcher() {
                 key={workspace?.id}
                 value={workspace?.id}
                 onSelect={(currentValue) => {
-                  setValue(currentValue)
                   setOpen(false)
-                  setWorkspace(workspaces[i])
-
-                  window.location.reload()
+                  // @ts-ignore
+                  handleWorkspaceChange(workspaces[i])
                 }}
               >
                 <span className="truncate">{workspace.name}</span>
                 <CheckIcon
                   className={cn(
                     "ml-auto h-4 w-4",
-                    value === workspace?.id ? "opacity-100" : "opacity-0"
+                    cookie && cookie.id === workspace?.id
+                      ? "opacity-100"
+                      : "opacity-0"
                   )}
                 />
               </CommandItem>
