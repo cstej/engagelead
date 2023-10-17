@@ -2,7 +2,8 @@ import React from "react"
 
 import AuthProvider from "./auth-provider"
 import { ThemeProvider } from "./theme-provider"
-import TrpcProvider from "./trpc-provider"
+import {TRPCReactProvider} from "@/components/providers/trpc-react"
+import { headers } from "next/headers"
 
 type Props = {
   children: React.ReactNode
@@ -10,13 +11,13 @@ type Props = {
 
 function Providers({ children }: Props) {
   return (
-    <TrpcProvider>
+    <TRPCReactProvider headers={headers()}>
       <AuthProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>
       </AuthProvider>
-    </TrpcProvider>
+    </TRPCReactProvider>
   )
 }
 

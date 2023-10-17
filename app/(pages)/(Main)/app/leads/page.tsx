@@ -4,17 +4,17 @@ import React from "react"
 import Link from "next/link"
 import { DownloadIcon } from "@radix-ui/react-icons"
 
-import { trpc } from "@/lib/trpc/client"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
+import LeadTable from "@/components/lead/lead-table"
+import { api } from "@/components/providers/trpc-react"
 
 import PageHeader from "../_components/PageHeader"
-import LeadTable from "./_components/LeadTable"
 
 type Props = {}
 
 export default function LeadPage({}: Props) {
-  const { isLoading, data: leads } = trpc.allLead.useQuery(undefined, {
+  const { isLoading, data: leads } = api.lead.getAllLeads.useQuery(undefined, {
     staleTime: 10000,
     cacheTime: 10000,
   })
@@ -22,6 +22,7 @@ export default function LeadPage({}: Props) {
   return (
     <>
       <PageHeader
+      key={"lead"}
         title="Manage Lead"
         description=" Nurture potential customers with streamlined lead management."
         buttons={[

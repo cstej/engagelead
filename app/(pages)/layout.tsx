@@ -31,12 +31,11 @@ interface RootLayoutProps {
   children: React.ReactNode
 }
 
-export const dynamic = "force-dynamic"
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en">
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",

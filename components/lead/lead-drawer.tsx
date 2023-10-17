@@ -3,7 +3,6 @@ import { PersonIcon } from "@radix-ui/react-icons"
 import { Mail, Phone, UserCircle } from "lucide-react"
 
 
-import { trpc } from "@/lib/trpc/client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -95,7 +94,7 @@ export default function LeadDrawer({ children, lead }: Props) {
                 <div className="grid grid-cols-2">
                   <div className="flex flex-col gap-4 text-muted-foreground">
                     {leadField.map((field) => (
-                      <div className="flex items-center gap-2">
+                      <div key={field.id} className="flex items-center gap-2">
                         {field.icon}
                         <Label htmlFor="name">{field.label}</Label>
                       </div>

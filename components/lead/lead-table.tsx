@@ -8,9 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { DataTableRowActions } from "@/app/(pages)/(Main)/app/leads/_components/DataTableRowActions"
+import { DataTableRowActions } from "./data-table-row-actions"
 
-import LeadDrawer from "./LeadDrawer"
+import LeadDrawer from "./lead-drawer"
 import { Lead } from "@/server/schema/lead.schema"
 
 type Props = {

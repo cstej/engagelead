@@ -6,7 +6,6 @@ import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 import { useQueryClient } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
-import { trpc } from "@/lib/trpc/client"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -22,6 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/components/providers/trpc-react"
 
 type Workspaces = [
   {
@@ -37,15 +37,15 @@ export function WorkspaceSwitcher() {
     isLoading,
     isError,
     data: workspaces,
-  } = trpc.allWorkspaceByUser.useQuery(undefined, {
+  } = api.workspace.getUserWorkspaces.useQuery(undefined, {
     staleTime: 10000,
     cacheTime: 10000,
   })
 
   const queryClient = useQueryClient()
-  const { mutate } = trpc.switchWorkspace.useMutation({
+  const { mutate } = api.workspace.switchWorkspace.useMutation({
     onSuccess: () => {
-      refresh()
+     refresh()
 
       queryClient.clear()
     },

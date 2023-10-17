@@ -37,9 +37,13 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
+import { api } from "@/components/providers/trpc-react"
 
-import { leadSource, leadStatus } from "../_components/LeadTable"
 import PageHeader from "../../_components/PageHeader"
+import {
+  leadSource,
+  leadStatus,
+} from "../../../../../../components/lead/lead-table"
 
 type Props = {}
 
@@ -67,7 +71,9 @@ export default function AddLead({}: Props) {
     CustomFieldDefination[]
   >([])
 
-  const { members } = useWorkspaceMembersStore()
+  const { data: members } = api.workspace.getMembers.useQuery(undefined, {
+    staleTime: 600000,
+  })
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const router = useRouter()
@@ -140,7 +146,7 @@ export default function AddLead({}: Props) {
       />
 
       <main className="mx-auto w-[786px] rounded-md border">
-        <Form {...form} >
+        <Form {...form}>
           <form
             className="grid grid-cols-2 gap-4"
             onSubmit={form.handleSubmit(onSubmit)}

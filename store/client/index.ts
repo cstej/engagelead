@@ -36,6 +36,6 @@ const fetchMembers = async () => {
     console.error("Error fetching members:", error)
   }
 }
-fetchMembers()
+// fetchMembers()
 
 export { useWorkspaceMembersStore }

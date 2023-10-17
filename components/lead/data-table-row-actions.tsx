@@ -30,8 +30,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "@/components/ui/use-toast"
 
-import { assignLeadToUser } from "../actions"
+import { assignLeadToUser } from "../../app/(pages)/(Main)/app/leads/actions"
 import { Lead } from "@/server/schema/lead.schema"
+import { api } from "../providers/trpc-react"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -42,7 +43,10 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const lead = row.original as Lead
 
-  const { members } = useWorkspaceMembersStore()
+  const { data: members } = api.workspace.getMembers.useQuery(undefined, {
+    staleTime: 600000,
+  })
+  
   const [open, setOpen] = React.useState(false)
 
   async function handleAssignToChange(value: string) {
