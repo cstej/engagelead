@@ -2,8 +2,8 @@ import { headers } from "next/headers"
 import { AppRouter } from "@/server"
 import {
   createTRPCProxyClient,
+  httpBatchLink,
   loggerLink,
-  unstable_httpBatchStreamLink,
 } from "@trpc/client"
 
 import { getTrpcUrl, transformer } from "@/lib/shared"
@@ -16,7 +16,7 @@ export const api = createTRPCProxyClient<AppRouter>({
         process.env.NODE_ENV === "development" ||
         (op.direction === "down" && op.result instanceof Error),
     }),
-    unstable_httpBatchStreamLink({
+    httpBatchLink({
       url: getTrpcUrl(),
       headers() {
         const heads = new Map(headers())

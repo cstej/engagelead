@@ -87,11 +87,11 @@ export default function MemberInviteModal({}: Props) {
           Invite member
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="p-0">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle>Invite workspace members</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 px-6 py-4">
           <Tabs defaultValue="invite-individual">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="invite-individual">
@@ -191,8 +191,8 @@ export default function MemberInviteModal({}: Props) {
             </TabsContent>
           </Tabs>
         </div>
-        <Separator />
-        <DialogFooter>
+       
+        <DialogFooter className="border-t bg-primary-foreground p-4">
           <Button
             type="submit"
             form="inviteMemberForm"

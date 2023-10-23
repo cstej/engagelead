@@ -1,9 +1,9 @@
 "use client"
 
-
 import React, { useEffect } from "react"
 import { Role } from "@prisma/client"
 import { Loader2, MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -44,9 +44,9 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
+import Spinner from "@/components/spinner"
 
 import { removeMemberWorkspace, updateMemberRole } from "../../actions"
-import { useSession } from "next-auth/react"
 
 type Props = {
   member: z.infer<typeof memberSchema>
@@ -62,9 +62,7 @@ const updateRoleFormSchema = z.object({
 export function RoleModal({ member, workspaceId }: Props) {
   const [showEditMemberDialog, setShowEditMemberDialog] = React.useState(false)
 
-  const {data: session}=useSession()
-
-  
+  const { data: session } = useSession()
 
   const updateRoleForm = useForm({
     defaultValues: {
@@ -133,7 +131,11 @@ export function RoleModal({ member, workspaceId }: Props) {
               <span>Edit</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem disabled={member.role === Role.ADMIN || session?.user.email===member.email}
+            <DropdownMenuItem
+              disabled={
+                member.role === Role.ADMIN ||
+                session?.user.email === member.email
+              }
               onSelect={() => {
                 setDeleteAlert(true)
               }}
@@ -173,15 +175,15 @@ export function RoleModal({ member, workspaceId }: Props) {
         open={showEditMemberDialog}
         onOpenChange={setShowEditMemberDialog}
       >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+        <DialogContent className="p-0 sm:max-w-[425px]">
+          <DialogHeader className="px-6 pt-6">
             <DialogTitle>Change team member role</DialogTitle>
           </DialogHeader>
           <Form {...updateRoleForm}>
             <form
               id="roleForm"
               onSubmit={updateRoleForm.handleSubmit(handleUpdateRoleSubmit)}
-              className="grid gap-4 py-4"
+              className="grid gap-4 px-6 py-4"
             >
               <FormField
                 name="role"
@@ -219,23 +221,18 @@ export function RoleModal({ member, workspaceId }: Props) {
               />
             </form>
           </Form>
-          <Separator />
-          <DialogFooter>
+          <DialogFooter className="border-t p-4">
             <Button
               disabled={
                 updateRoleForm.formState.isSubmitting ||
                 !updateRoleForm.formState.isDirty
               }
+              isLoading={updateRoleForm.formState.isSubmitting}
+              loadingText="Saving"
               form="roleForm"
               type="submit"
             >
-              {updateRoleForm.formState.isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving..{" "}
-                </>
-              ) : (
-                " Save changes"
-              )}
+              <span>Save</span>
             </Button>
           </DialogFooter>
         </DialogContent>

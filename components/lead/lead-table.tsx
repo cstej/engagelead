@@ -90,6 +90,7 @@ export default function LeadTable({ data, pageCount,isLoading }: Props) {
             {format(new Date(row.getValue("createdAt")), "dd-MM-yyyy")}
           </div>
         ),
+        
       },
 
       {

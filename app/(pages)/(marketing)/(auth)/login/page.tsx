@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useDebounce } from "@uidotdev/usehooks"
 import { Info } from "lucide-react"
-import { signIn, useSession } from "next-auth/react"
+import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
+import { motion } from "framer-motion"
 
 type Props = {}
 
@@ -89,8 +90,14 @@ const Login = (props: Props) => {
   }
 
   return (
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.5 }}
+  >
     <div className="relative flex h-[80vh] w-screen flex-col items-center justify-center overflow-hidden">
-  <div className="absolute inset-0 -z-40 bg-[url(https://play.tailwindcss.com/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] "></div>
+      <div className="absolute inset-0 -z-40 bg-[url(https://play.tailwindcss.com/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] "></div>
       <div className="container grid max-w-xl items-center gap-8  ">
         <Card className=" shadow-md">
           <CardHeader className="space-y-1">
@@ -171,20 +178,26 @@ const Login = (props: Props) => {
             </Button>
           </CardFooter>
           <div className=" flex flex-wrap items-center space-x-2 p-6 pt-0">
-          <div className="flex-1 text-sm text-muted-foreground">
-
-            Don&apos;t have an account? <Link className="font-medium hover:underline" href="/signup">Sign Up</Link>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <Link className="font-medium hover:underline" href="/forgot-password">Forgot Password?</Link>
+            <div className="flex-1 text-sm text-muted-foreground">
+              Don&apos;t have an account?{" "}
+              <Link className="font-medium hover:underline" href="/signup">
+                Sign Up
+              </Link>
             </div>
-        </div>
-          
+            <div className="text-sm text-muted-foreground">
+              <Link
+                className="font-medium hover:underline"
+                href="/forgot-password"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+          </div>
         </Card>
-
-     
       </div>
     </div>
+
+    </motion.div>
   )
 }
 

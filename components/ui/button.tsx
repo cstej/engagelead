@@ -4,6 +4,8 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+import Spinner from "../spinner"
+
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
@@ -35,20 +37,54 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "prefix">,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  prefix?: string | React.ReactNode
+  postfix?: string | React.ReactNode
+  isLoading?: boolean
+  loadingText?: string | React.ReactNode
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      prefix,
+      postfix,
+      isLoading = false,
+      loadingText,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          "disabled:pointer-events-auto disabled:!cursor-not-allowed disabled:border disabled:bg-primary-foreground disabled:text-primary disabled:opacity-75 disabled:shadow-none","transition-[width] de "
+        )}
         ref={ref}
+        disabled={isLoading}
         {...props}
-      />
+      >
+        {isLoading ? (
+          <>
+            <Spinner size="w-4 h-5" />
+            {loadingText && <span className="ml-2">{loadingText}</span>}
+          </>
+        ) : (
+          <>
+            {prefix && <span className="mr-2">{prefix}</span>}
+            {props.children}
+            {postfix && <span className="ml-2">{postfix}</span>}
+          </>
+        )}
+      </Comp>
     )
   }
 )

@@ -4,10 +4,11 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
+import { useDebounce } from "@uidotdev/usehooks"
 import { Info, Loader2 } from "lucide-react"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
-import { useDebounce } from "@uidotdev/usehooks"
 import { z } from "zod"
 
 import { cn } from "@/lib/utils"
@@ -31,22 +32,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
-import { useQuery } from "@tanstack/react-query"
+import { motion } from "framer-motion"
 
 type Props = {}
 const formSchema = z.object({
   name: z.string(),
-  email: z
-    .string()
-    .email("Please enter a valid email address"),
-    
+  email: z.string().email("Please enter a valid email address"),
+
   password: z.string().min(8, "Password must be at least 8 characters long"),
 })
 
 const isEmailExists = async (email: string) => {
   const res = await fetch(`/api/user/${email}`)
   if (res.status === 200) {
-    const { isUser } = await res.json() as { isUser: boolean }
+    const { isUser } = (await res.json()) as { isUser: boolean }
     return isUser
   }
 }
@@ -65,19 +64,23 @@ const SignupPage = (props: Props) => {
 
   const debouncedEmail = useDebounce(form.watch("email"), 500)
 
-  useQuery(["isEmailExists", debouncedEmail], () => isEmailExists(debouncedEmail), {
-    enabled: !!debouncedEmail,
-    onSuccess: (data) => {
-      if (data) {
-        form.setError("email", {
-          type: "validate",
-          message: "Email already exists",
-        })
-      }else{
-        form.clearErrors("email",)
-      }
-    },
-  })
+  useQuery(
+    ["isEmailExists", debouncedEmail],
+    () => isEmailExists(debouncedEmail),
+    {
+      enabled: !!debouncedEmail,
+      onSuccess: (data) => {
+        if (data) {
+          form.setError("email", {
+            type: "validate",
+            message: "Email already exists",
+          })
+        } else {
+          form.clearErrors("email")
+        }
+      },
+    }
+  )
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -96,10 +99,17 @@ const SignupPage = (props: Props) => {
       }
     } catch (error) {}
   }
+  
   return (
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.5 }}
+  >
     <div className="relative flex h-[80vh] w-screen flex-col items-center justify-center">
-       <div className="absolute inset-0 -z-40 bg-[url(https://play.tailwindcss.com/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] "></div>
-     <div className="container grid max-w-xl items-center gap-8  ">
+      <div className="absolute inset-0 -z-40 bg-[url(https://play.tailwindcss.com/img/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] "></div>
+      <div className="container grid max-w-xl items-center gap-8  ">
         <Card className="shadow-md">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Create an account</CardTitle>
@@ -109,7 +119,6 @@ const SignupPage = (props: Props) => {
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid grid-cols-1 gap-6">
-              
               <Button variant="outline" className="w-full">
                 <Icons.google className="mr-2 h-4 w-4" />
                 Google
@@ -199,21 +208,25 @@ const SignupPage = (props: Props) => {
             </Button>
           </CardFooter>
 
-
           <div className=" flex flex-col flex-wrap  space-y-2 p-6 pt-0">
-          <div className=" text-sm text-muted-foreground">
-
-            Already have an account? <Link className="font-medium hover:underline" href="/login">Login</Link>
+            <div className=" text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Link className="font-medium hover:underline" href="/login">
+                Login
+              </Link>
+            </div>
+            <div className=" text-xs text-muted-foreground">
+              By signing up, you agree to our Terms of Service and our Privacy
+              Policy
+            </div>
           </div>
-          <div className=" text-xs text-muted-foreground">
-          By signing up, you agree to our Terms of Service and our Privacy Policy
-          </div>
-        </div>
 
           {/* Signup Form End Here */}
         </Card>
       </div>
     </div>
+
+    </motion.div>
   )
 }
 
