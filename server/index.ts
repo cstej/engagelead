@@ -1,5 +1,3 @@
-// import { z } from "zod"
-
 import { leadRouter } from "./routers/lead";
 import { workspaceRouter } from "./routers/workspace";
 import { createTRPCRouter } from "./trpc"

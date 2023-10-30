@@ -6,6 +6,6 @@ type Props = {
 
 export default function SettingLayout({children}: Props) {
   return (
-    <div className="flex min-h-screen flex-col" >{children}</div>
+    <div className="mx-auto flex min-h-screen w-full max-w-[880px] flex-col space-y-4 " >{children}</div>
   )
 }

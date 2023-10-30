@@ -67,12 +67,12 @@ export default async function IndexPage() {
 
       <section className="mx-10 mt-20 flex flex-col items-center gap-4">
         <h3 className=" text-lg font-medium text-muted-foreground">Trusted by top companies</h3>
-        <Image
+        {/* <Image
           src={"https://telecrm.in/assets/images/all-logos-theme.png"}
           alt="brand"
           width={792}
           height={54}
-        />
+        /> */}
       </section>
     </>
   )

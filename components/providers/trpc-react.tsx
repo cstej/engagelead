@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { AppRouter } from "@/server"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { httpBatchLink, loggerLink, unstable_httpBatchStreamLink } from "@trpc/client"
+import { httpBatchLink, loggerLink,  } from "@trpc/client"
 import { createTRPCReact } from "@trpc/react-query"
 
 import { getTrpcUrl, transformer } from "@/lib/shared"

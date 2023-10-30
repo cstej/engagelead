@@ -79,4 +79,53 @@ export const workspaceRouter = createTRPCRouter({
 
     return users.map((item) => item.user)
   }),
+
+  getMembersWithRole: protectedProcedure.query(async({ctx})=>{
+    return await ctx.prisma.workspace
+    .aggregateRaw({
+      pipeline: [
+        {
+          $match: { _id: { $oid: ctx.session.workspaceId } },
+        },
+        {
+          $lookup: {
+            from: "WorkspaceMember",
+            localField: "_id",
+            foreignField: "workspaceId",
+            as: "members",
+          },
+        },
+        {
+          $unwind: "$members",
+        },
+        {
+          $lookup: {
+            from: "User",
+            localField: "members.userId",
+            foreignField: "_id",
+            as: "members.user",
+          },
+        },
+        {
+          $unwind: "$members.user",
+        },
+        {
+          $project: {
+            _id: 0,
+            "member": {
+              memberId: { $toString: "$members._id" },
+              userId: { $toString: "$members.user._id" },
+              email: "$members.user.email",
+              emailVerified: { $ifNull: ["$members.user.emailVerified", null] },
+              name: "$members.user.name",
+              image: { $ifNull: ["$members.user.image", null] },
+              role: "$members.role",
+            },
+           
+          },
+        },
+      ],
+    })
+    .then((result) => result[0])
+  })
 })

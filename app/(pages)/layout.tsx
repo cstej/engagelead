@@ -16,10 +16,7 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
   },
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
+  
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
@@ -30,6 +27,16 @@ export const metadata: Metadata = {
 interface RootLayoutProps {
   children: React.ReactNode
 }
+
+import { Viewport } from 'next'
+ 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+}
+ 
 
 
 export default async function RootLayout({ children }: RootLayoutProps) {

@@ -66,7 +66,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(
           buttonVariants({ variant, size, className }),
-          "disabled:pointer-events-auto disabled:!cursor-not-allowed disabled:border disabled:bg-primary-foreground disabled:text-primary disabled:opacity-75 disabled:shadow-none","transition-[width] de "
+          "disabled:pointer-events-auto disabled:!cursor-not-allowed disabled:border disabled:bg-primary-foreground disabled:text-primary disabled:opacity-75 disabled:shadow-none","de transition-[width] "
         )}
         ref={ref}
         disabled={isLoading}
@@ -74,7 +74,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {isLoading ? (
           <>
-            <Spinner size="w-4 h-5" />
+            <Spinner size="w-4 h-4" />
             {loadingText && <span className="ml-2">{loadingText}</span>}
           </>
         ) : (
