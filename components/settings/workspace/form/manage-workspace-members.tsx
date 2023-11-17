@@ -1,38 +1,31 @@
-import React from "react"
-import { Search } from "lucide-react"
+"use client"
 
+import React from "react"
+import { Search, UserPlus } from "lucide-react"
+import { z } from "zod"
+
+import { memberSchema } from "@/lib/zodSchemas"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
+import { api } from "@/components/providers/trpc-react"
 import { UserAvatar } from "@/app/(pages)/(Main)/app/_components/user-avatar"
+import MemberInviteModal from "@/app/(pages)/(Main)/app/(Settings)/settings/workspace/_components/MemberInviteModal"
+
+const MemberAction = React.lazy(() => import('./member-action'))
 
 const ManageWorkspaceMembers = () => {
-  // @ts-ignore
-  const workspaceMembers = [
-    {
-        id: "1",
-        name: "tej",
-        email: "cstej@gmail.com",
-        image:"",
-        role: "admin",
-
-    }
-  ]
+  const { data: workspaceMembers, isLoading } =
+    api.workspace.getMembersWithRole.useQuery(undefined, {})
 
   return (
     <Card className="relative overflow-hidden shadow-none">
@@ -44,50 +37,106 @@ const ManageWorkspaceMembers = () => {
       </CardHeader>
 
       <CardContent className="my-4 space-y-4">
-        <form>
-          <Input prefix={<Search className="h-4 w-4" />} placeholder="Search" />
+        <form className="flex w-full gap-4">
+          <div className="grow">
+            <Input
+              prefix={<Search className="h-4 w-4" />}
+              placeholder="Search"
+              className="h-9"
+            />
+          </div>
+
+          <MemberInviteModal>
+            <Button className="w-fit" variant={"outline"}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Invite
+            </Button>
+          </MemberInviteModal>
         </form>
 
-        {/* Members Table */}
-        {/* <div className="overflow-hidden rounded-md border"> */}
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader >
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {workspaceMembers?.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell className="flex items-center gap-2">
-                    <UserAvatar
-                      user={{
-                        name: member.name,
-                        image: member.image || "",
-                      }}
-                      className="h-8 w-8"
-                    />
-                    {member.name}
-                  </TableCell>
-                  <TableCell>{member.email}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{member.role}</Badge>
-                  </TableCell>
-                  <TableCell>{/* workspace members action modal*/}</TableCell>
-                </TableRow>
+        <>
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <MemberCardSkeleton key={i} />
+              ))
+            : workspaceMembers?.map((member) => (
+                <MemberCard key={member.memberId} member={member} />
               ))}
-            </TableBody>
-          </Table>
-        </div>
-        {/* </div> */}
-       
+        </>
+
+      
       </CardContent>
     </Card>
   )
 }
 
 export default ManageWorkspaceMembers
+
+type MemberCardProps = {
+  member: z.infer<typeof memberSchema>
+}
+
+function MemberCard({ member }: MemberCardProps) {
+  const { name, image, email, role } = member
+  return (
+    <Card className="rounded-md">
+      <CardContent className="flex flex-col items-center justify-between p-4 sm:flex-row">
+        <div className="flex items-center gap-4 ">
+          <UserAvatar
+            user={{
+              name: name,
+              image: image || "",
+            }}
+            className="h-8 w-8"
+          />
+
+          <div className="flex flex-col">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold capitalize">{name}</span>
+            </div>
+            <div className="flex items-center">
+              <span className="truncate text-sm text-muted-foreground">
+                {email}
+              </span>
+              <span className="text-default mx-2 block">•</span>
+              <Badge variant="outline" className="text-[10px] capitalize">
+                {role}
+              </Badge>
+            </div>
+          </div>
+        </div>
+        <Separator className="my-2  sm:hidden" />
+        <div>
+          <React.Suspense fallback={<Skeleton className="h-8 w-8" /> }>
+          <MemberAction member={member} key={member.memberId} />
+          </React.Suspense>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function MemberCardSkeleton() {
+  return (
+    <Card className="rounded-md">
+      <CardContent className="flex flex-col items-center justify-between p-4 sm:flex-row">
+        <div className="flex items-center gap-4 ">
+          <Skeleton className="h-8 w-8 rounded-full" />
+
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-5 w-32" />
+            </div>
+            <div className="flex items-center">
+              <Skeleton className="h-5 w-52" />
+            </div>
+          </div>
+        </div>
+        {/* <Separator className="my-2 sm:hidden" /> */}
+        {/* <div>
+          <Skeleton className="h-5 w-10" />
+        </div> */}
+      </CardContent>
+    </Card>
+  )
+}

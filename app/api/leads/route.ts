@@ -12,9 +12,9 @@ const createLeadSchema = z.object({
   name: z.string().min(2).max(50).trim(),
   email: z.string().email().toLowerCase().trim(),
   phone: z.string().max(10).trim(),
-  lead_source: z.string(),
-  lead_status: z.string(),
-  assigned_to: z.string(),
+  leadSource: z.string(),
+  leadStatus: z.string(),
+  assignedTo: z.string(),
   customFields: z.record(z.unknown()).optional(),
 })
 
@@ -44,9 +44,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         name: data.name,
         email: data.email,
         phone: data.phone,
-        lead_source: data.lead_source,
-        lead_status: data.lead_status,
-        assigned_to: data.assigned_to,
+        leadSource: data.leadSource,
+        leadStatus: data.leadStatus,
+        assignedTo: data.assignedTo,
         createdById: session.user.id,
         workspaceId: uw.workspaceId,
         customFields: {

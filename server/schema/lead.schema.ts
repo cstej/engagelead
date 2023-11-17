@@ -3,9 +3,9 @@ export type Lead = {
     name: string
     email: string
     phone: string
-    lead_status: string
-    lead_source: string
-    assigned_to: {
+    leadStatus: string
+    leadSource: string
+    assignedTo: {
       _id: string
       name: string
     }

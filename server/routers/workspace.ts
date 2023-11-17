@@ -1,7 +1,10 @@
 import { cookies } from "next/headers"
+import { Role } from "@prisma/client"
 import { TRPCError } from "@trpc/server"
 import _ from "lodash"
 import { z } from "zod"
+
+import { memberSchema } from "@/lib/zodSchemas"
 
 import { createTRPCRouter, protectedProcedure } from "../trpc"
 
@@ -57,7 +60,7 @@ export const workspaceRouter = createTRPCRouter({
       //   })
       // }
 
-      return cookies().set("workspace",JSON.stringify(input) )
+      return cookies().set("workspace", JSON.stringify(input))
     }),
 
   getMembers: protectedProcedure.query(async ({ ctx }) => {
@@ -80,52 +83,71 @@ export const workspaceRouter = createTRPCRouter({
     return users.map((item) => item.user)
   }),
 
-  getMembersWithRole: protectedProcedure.query(async({ctx})=>{
-    return await ctx.prisma.workspace
-    .aggregateRaw({
-      pipeline: [
-        {
-          $match: { _id: { $oid: ctx.session.workspaceId } },
-        },
-        {
-          $lookup: {
-            from: "WorkspaceMember",
-            localField: "_id",
-            foreignField: "workspaceId",
-            as: "members",
+  getMembersWithRole: protectedProcedure
+    .output(z.array(memberSchema))
+    .query(async ({ ctx }) => {
+      const data = await ctx.prisma.workspace.aggregateRaw({
+        pipeline: [
+          {
+            $match: { _id: { $oid: ctx.session.workspaceId } },
           },
-        },
-        {
-          $unwind: "$members",
-        },
-        {
-          $lookup: {
-            from: "User",
-            localField: "members.userId",
-            foreignField: "_id",
-            as: "members.user",
+          {
+            $lookup: {
+              from: "WorkspaceMember",
+              localField: "_id",
+              foreignField: "workspaceId",
+              as: "members",
+            },
           },
-        },
-        {
-          $unwind: "$members.user",
-        },
-        {
-          $project: {
-            _id: 0,
-            "member": {
+          {
+            $unwind: "$members",
+          },
+          {
+            $lookup: {
+              from: "User",
+              localField: "members.userId",
+              foreignField: "_id",
+              as: "members.user",
+            },
+          },
+          {
+            $unwind: "$members.user",
+          },
+          {
+            $project: {
+              _id: 0,
               memberId: { $toString: "$members._id" },
               userId: { $toString: "$members.user._id" },
               email: "$members.user.email",
-              emailVerified: { $ifNull: ["$members.user.emailVerified", null] },
               name: "$members.user.name",
               image: { $ifNull: ["$members.user.image", null] },
               role: "$members.role",
+              workspaceId: { $toString: "$members.workspaceId" },
             },
-           
           },
+        ],
+      })
+
+      return data as unknown as z.infer<typeof memberSchema>[]
+    }),
+
+  updateMemberRole: protectedProcedure
+    .input(
+      z.object({
+        memberId: z.string(),
+        role: z.nativeEnum(Role),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const data = await ctx.prisma.workspaceMember.update({
+        where: {
+          id: input.memberId,
         },
-      ],
-    })
-    .then((result) => result[0])
-  })
+        data: {
+          role: input.role,
+        },
+      })
+
+      return data
+    }),
 })

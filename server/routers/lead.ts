@@ -17,7 +17,7 @@ export const leadRouter = createTRPCRouter({
     if (ctx.session.role === Role.SALES_AGENT) {
       pipeline.push({
         $match: {
-          assigned_to: { $oid: ctx.session.userId },
+          assignedTo: { $oid: ctx.session.userId },
         },
       })
     }
@@ -26,7 +26,7 @@ export const leadRouter = createTRPCRouter({
       {
         $lookup: {
           from: "User",
-          localField: "assigned_to",
+          localField: "assignedTo",
           foreignField: "_id",
           as: "user",
         },
@@ -49,11 +49,11 @@ export const leadRouter = createTRPCRouter({
           updatedAt: {
             $toString: "$updatedAt",
           },
-          lead_source: 1,
-          lead_status: 1,
+          leadSource: 1,
+          leadStatus: 1,
 
           workspaceId: { $toString: "$workspaceId" },
-          assigned_to: {
+          assignedTo: {
             _id: { $toString: "$user._id" },
             name: { $toString: "$user.name" },
           },

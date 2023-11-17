@@ -35,7 +35,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { toast } from "@/components/ui/use-toast"
 import { Icons } from "@/components/icons"
 import { api } from "@/components/providers/trpc-react"
 
@@ -44,6 +43,7 @@ import {
   leadSource,
   leadStatus,
 } from "../../../../../../components/lead/lead-table"
+import { toast } from "sonner"
 
 type Props = {}
 
@@ -51,9 +51,9 @@ const formSchema = z.object({
   name: z.string().min(2).max(50).trim(),
   email: z.string().email().toLowerCase().trim(),
   phone: z.string().max(10).trim(),
-  lead_source: z.string(),
-  lead_status: z.string(),
-  assigned_to: z.string(),
+  leadSource: z.string(),
+  leadStatus: z.string(),
+  assignedTo: z.string(),
   customFields: z.record(z.unknown()).optional(),
 })
 
@@ -123,9 +123,7 @@ export default function AddLead({}: Props) {
 
       if (response.status === 201) {
         router.push("/app/leads")
-        toast({
-          description: "Lead has been recorded.",
-        })
+        toast.success("Lead has been recorded.")
       }
     } catch (error) {
       setIsLoading(false)
@@ -201,7 +199,7 @@ export default function AddLead({}: Props) {
             />
             <FormField
               control={form.control}
-              name="lead_status"
+              name="leadStatus"
               render={({ field }) => (
                 <FormItem className="col-start-1">
                   <FormLabel>Lead Status</FormLabel>
@@ -223,7 +221,7 @@ export default function AddLead({}: Props) {
             />
             <FormField
               control={form.control}
-              name="lead_source"
+              name="leadSource"
               render={({ field }) => (
                 <FormItem className="col-start-2">
                   <FormLabel>Lead Source</FormLabel>
@@ -246,7 +244,7 @@ export default function AddLead({}: Props) {
 
             <FormField
               control={form.control}
-              name="assigned_to"
+              name="assignedTo"
               render={({ field }) => (
                 <FormItem className="col-start-1 ">
                   <FormLabel>Assign Lead</FormLabel>

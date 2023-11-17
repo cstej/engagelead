@@ -3,9 +3,9 @@
 import React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
 
 import { AcceptInvitation } from "./action"
 
@@ -25,17 +25,11 @@ export default function AcceptInviteCard({}: Props) {
     const result = await AcceptInvitation(token as string)
 
     if (result?.error) {
-      toast({
-        title: result.error,
-        description: "There was a problem with your request.",
-        variant: "destructive",
+      toast.error("There was a problem with your request.", {
+        description: result.error,
       })
     } else {
-      toast({
-        title: "Invitation accepted",
-        description: "Invitation accepted successfully.",
-        variant: "default",
-      })
+      toast.success("Invitation accepted")
       router.push("/app/dashboard")
     }
   }

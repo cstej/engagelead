@@ -1,7 +1,7 @@
 import { AvatarProps } from "@radix-ui/react-avatar"
+import { AvatarIcon } from "@radix-ui/react-icons"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Icons } from "@/components/icons"
 
 interface UserAvatarProps extends AvatarProps {
   user: {
@@ -16,9 +16,16 @@ export function UserAvatar({ user, ...props }: UserAvatarProps) {
       {user.image ? (
         <AvatarImage alt="Picture" src={user.image} />
       ) : (
-        <AvatarFallback >
-          <span className="sr-only">{user.name}</span>
-          <Icons.user className="h-4 w-4" />
+        <AvatarFallback>
+          <span>
+            {user.name ? (
+              `${user.name.split(" ")[0][0]}${
+                user.name.split(" ")[1] ? user.name.split(" ")[1][0] : ""
+              }`
+            ) : (
+              <AvatarIcon />
+            )}
+          </span>
         </AvatarFallback>
       )}
     </Avatar>

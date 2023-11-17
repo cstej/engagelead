@@ -1,9 +1,12 @@
 "use client"
 
 import React from "react"
+import { Lead } from "@/server/schema/lead.schema"
 import { useWorkspaceMembersStore } from "@/store/client"
 import { CheckIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 import { Row } from "@tanstack/react-table"
+import { toast } from "sonner"
+
 import { getErrorMessage } from "@/lib/exceptions/errors"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -28,10 +31,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { toast } from "@/components/ui/use-toast"
 
 import { assignLeadToUser } from "../../app/(pages)/(Main)/app/leads/actions"
-import { Lead } from "@/server/schema/lead.schema"
 import { api } from "../providers/trpc-react"
 
 interface DataTableRowActionsProps<TData> {
@@ -46,22 +47,17 @@ export function DataTableRowActions<TData>({
   const { data: members } = api.workspace.getMembers.useQuery(undefined, {
     staleTime: 600000,
   })
-  
+
   const [open, setOpen] = React.useState(false)
 
   async function handleAssignToChange(value: string) {
     try {
       await assignLeadToUser(lead.id, value)
-      toast({
-        title: "Success",
-        description: "Lead assigned successfully",
-      })
+
+      toast.success("Lead assigned successfully")
     } catch (error) {
-      console.log(error)
-      toast({
-        title: "Something went wrong",
+      toast.error("There was a problem with your request.", {
         description: getErrorMessage(error),
-        variant: "destructive",
       })
     } finally {
       setOpen(false)
@@ -85,7 +81,7 @@ export function DataTableRowActions<TData>({
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Assign to</DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="p-0">
-            <Command defaultValue={lead.assigned_to._id}>
+            <Command defaultValue={lead.assignedTo._id}>
               <CommandInput
                 placeholder="Search members..."
                 autoFocus={true}
@@ -104,7 +100,7 @@ export function DataTableRowActions<TData>({
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
-                          member.id === lead.assigned_to._id
+                          member.id === lead.assignedTo._id
                             ? "opacity-100"
                             : "opacity-0"
                         )}

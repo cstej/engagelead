@@ -17,6 +17,7 @@ model Workspace {
   id              String            @id @default(auto()) @map("_id") @db.ObjectId
   createdAt       DateTime          @default(now())
   name            String?
+  about           String?
   members         WorkspaceMember[]
   updatedAt       DateTime          @updatedAt
   fieldDefinition FieldDefinition[]
@@ -100,9 +101,9 @@ model Lead {
   name         String
   email        String
   phone        String
-  lead_status  String
-  lead_source  String
-  assigned_to  String             @db.ObjectId
+  leadStatus  String
+  leadSource  String
+  assignedTo  String             @db.ObjectId
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   workspace    Workspace          @relation(fields: [workspaceId], references: [id])

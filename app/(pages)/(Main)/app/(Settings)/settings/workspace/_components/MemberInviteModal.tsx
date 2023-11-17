@@ -34,13 +34,15 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toast } from "@/components/ui/use-toast"
 
 import { inviteMember } from "../../actions"
+import { toast } from "sonner"
 
-type Props = {}
+type Props = {
+  children: React.ReactNode
+}
 
-export default function MemberInviteModal({}: Props) {
+export default function MemberInviteModal({ children }: Props) {
   const [showDialog, setShowDialog] = React.useState(false)
 
   const { workspace } = useWorkspaceStore()
@@ -61,32 +63,25 @@ export default function MemberInviteModal({}: Props) {
   const handleInviteMemberSubmit = async (
     value: z.infer<typeof inviteMemberFormSchema>
   ) => {
-    const result = await inviteMember({ ...value, workspaceId:  workspace?.id ?? ""})
+    const result = await inviteMember({
+      ...value,
+      workspaceId: workspace?.id ?? "",
+    })
 
     if (result?.error) {
-      toast({
-        title: result.error,
-        description: "There was a problem with your request.",
-        variant: "destructive",
+      toast.error("There was a problem with your request.", {
+        description: result.error,
       })
     } else {
-      toast({
-        title: "Invitation sent",
-        description: "Invitation sent successfully to " + value.email + ".",
-        variant: "default",
-      })
+  
+      toast.success("Invitation sent successfully to " + value.email + ".")
       setShowDialog(false)
     }
   }
 
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <DialogTrigger asChild>
-        <Button variant={"outline"}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Invite member
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="p-0">
         <DialogHeader className="px-6 pt-6">
           <DialogTitle>Invite workspace members</DialogTitle>
@@ -191,7 +186,7 @@ export default function MemberInviteModal({}: Props) {
             </TabsContent>
           </Tabs>
         </div>
-       
+
         <DialogFooter className="border-t bg-primary-foreground p-4">
           <Button
             type="submit"

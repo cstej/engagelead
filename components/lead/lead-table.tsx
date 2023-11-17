@@ -125,13 +125,13 @@ export default function LeadTable({ data, pageCount,isLoading }: Props) {
         ),
       },
       {
-        accessorKey: "lead_source",
+        accessorKey: "leadSource",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Lead Source" />
         ),
         cell: ({ row }) => (
           <div className="flex items-center">
-            <div className="capitalize">{row.getValue("lead_source")}</div>
+            <div className="capitalize">{row.getValue("leadSource")}</div>
           </div>
         ),
         filterFn: (row, id, value) => {
@@ -139,13 +139,13 @@ export default function LeadTable({ data, pageCount,isLoading }: Props) {
         },
       },
       {
-        accessorKey: "lead_status",
+        accessorKey: "leadStatus",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Lead Status" />
         ),
         cell: ({ row }) => (
           <div className="flex items-center">
-            <div className="capitalize">{row.getValue("lead_status")}</div>
+            <div className="capitalize">{row.getValue("leadStatus")}</div>
           </div>
         ),
         filterFn: (row, id, value) => {
@@ -153,14 +153,14 @@ export default function LeadTable({ data, pageCount,isLoading }: Props) {
         },
       },
       {
-        accessorKey: "assigned_to",
+        accessorKey: "assignedTo",
         header: ({ column }) => (
           <div className="flex items-center">
             <DataTableColumnHeader column={column} title="Assigned To" />
           </div>
         ),
         cell: ({ row }) => (
-          <div className="capitalize">{row.original.assigned_to.name}</div>
+          <div className="capitalize">{row.original.assignedTo.name}</div>
         ),
       },
       {
@@ -181,7 +181,7 @@ export default function LeadTable({ data, pageCount,isLoading }: Props) {
       pageCount={pageCount}
       filterableColumns={[
         {
-          id: "lead_source",
+          id: "leadSource",
           title: "Lead Source",
           options: leadSource.map((source) => ({
             label: source.label,
@@ -189,7 +189,7 @@ export default function LeadTable({ data, pageCount,isLoading }: Props) {
           })),
         },
         {
-          id: "lead_status",
+          id: "leadStatus",
           title: "Lead Status",
           options: leadStatus.map((status) => ({
             label: status.label,

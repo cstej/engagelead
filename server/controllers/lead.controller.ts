@@ -20,7 +20,7 @@ export const getAllLeads = async ({ ctx }: { ctx: Ctx }) => {
     if (ctx.role === Role.SALES_AGENT) {
       pipeline.push({
         $match: {
-          assigned_to: { $oid: ctx.userId },
+          assignedTo: { $oid: ctx.userId },
         },
       })
     }
@@ -29,7 +29,7 @@ export const getAllLeads = async ({ ctx }: { ctx: Ctx }) => {
       {
         $lookup: {
           from: "User",
-          localField: "assigned_to",
+          localField: "assignedTo",
           foreignField: "_id",
           as: "user",
         },
@@ -52,11 +52,11 @@ export const getAllLeads = async ({ ctx }: { ctx: Ctx }) => {
           updatedAt: {
             $toString: "$updatedAt",
           },
-          lead_source: 1,
-          lead_status: 1,
+          leadSource: 1,
+          leadStatus: 1,
 
           workspaceId: { $toString: "$workspaceId" },
-          assigned_to: {
+          assignedTo: {
             _id: { $toString: "$user._id" },
             name: { $toString: "$user.name" },
           },
