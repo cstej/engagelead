@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/components/providers/trpc-react"
 import { UserAvatar } from "@/app/(pages)/(Main)/app/_components/user-avatar"
-import MemberInviteModal from "@/app/(pages)/(Main)/app/(Settings)/settings/workspace/_components/MemberInviteModal"
+import MemberInviteModal from "@/app/(pages)/(Main)/app/settings/workspace/_components/MemberInviteModal"
 
 const MemberAction = React.lazy(() => import('./member-action'))
 
