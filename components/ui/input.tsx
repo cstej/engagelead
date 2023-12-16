@@ -1,26 +1,28 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix"> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix" | "postfix"> {
   prefix?: React.ReactNode
+  postfix?: React.ReactNode
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, prefix, ...props }, ref) => {
+  ({ className, type, prefix, postfix, ...props }, ref) => {
     return (
       <>
-        {prefix ? (
+        {prefix || postfix ? (
           <div
             className={cn(
               "relative flex h-9 items-center overflow-hidden rounded-md border border-input shadow-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring",
               className
             )}
           >
-            <div className="flex h-full flex-col justify-center border-r border-input bg-primary-foreground px-3 py-1 text-muted-foreground">
-              {prefix}
-            </div>
+            {prefix && (
+              <div className="flex h-full flex-col justify-center border-r border-input bg-primary-foreground px-3 py-1 text-muted-foreground">
+                {prefix}
+              </div>
+            )}
             <input
               type={type}
               className={cn(
@@ -29,6 +31,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               ref={ref}
               {...props}
             />
+            {postfix && (
+              <div className="flex h-full flex-col justify-center border-l border-input bg-primary-foreground px-3 py-1 text-muted-foreground">
+                {postfix}
+              </div>
+            )}
           </div>
         ) : (
           <input

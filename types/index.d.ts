@@ -18,6 +18,7 @@ export type SidebarNavItem = {
   external?: boolean
   icon?: React.node
   href?: string
+  subItems?: SidebarNavItem[]
   }
 
   

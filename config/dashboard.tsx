@@ -3,6 +3,7 @@ import {
   Cable,
   Cog,
   Computer,
+  CreditCard,
   Home,
   MoreHorizontal,
   UserCircle2,
@@ -15,20 +16,36 @@ export const dashboardConfig: DashboardConfig = {
   settingNav: [
     {
       title: "Profile",
-      href: "/app/settings/profile",
+      href: "/app/settings/my-account",
       icon: <UserCircle2 />,
     },
     {
       title: "Workspace",
-      href: "/app/settings/workspace",
+      href: "#",
       icon: <Computer />,
+      subItems:[
+       
+        {
+          title: "Members",
+          href: "/app/settings/workspace/members",
+          icon: <Users2 />
+        },
+        {
+          title: "Setting",
+          href: "/app/settings/workspace",
+          icon: <Cog />
+        },
+      ],
+     
     },
 
     {
-      title: "Workspace Members",
-      href: "/app/settings/workspace/members",
-      icon: <Users2 />
-    }
+      title: "Billing",
+      href: "/app/settings/billing",
+      icon: <CreditCard />
+    },
+
+   
   ],
   sidebarNav: [
     {
@@ -48,7 +65,7 @@ export const dashboardConfig: DashboardConfig = {
     },
     {
       title: "Settings",
-      href: "/app/settings",
+      href: "/app/settings/my-account",
       icon: <Cog />,
     },
   ],
@@ -71,7 +88,7 @@ export const dashboardConfig: DashboardConfig = {
     },
     {
       title: "Settings",
-      href: "/app/settings",
+      href: "/app/settings/",
       icon: <Cog />,
     },
     {

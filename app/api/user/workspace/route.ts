@@ -5,6 +5,8 @@ import { getErrorMessage } from "@/lib/exceptions/errors";
 
 export async function GET(req: NextRequest,) : Promise<NextResponse> {
   try {
+
+    console.warn("workspace route")
     const user = await getCurrentUser();
     if (!user) {
      return NextResponse.json({ message: "Unauthorized Request" }, { status: 401 })

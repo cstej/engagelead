@@ -18,15 +18,14 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/components/providers/trpc-react"
+import MemberInviteModal from "@/components/settings/workspace/form/MemberInviteModal"
 import { UserAvatar } from "@/app/(pages)/(Main)/app/_components/user-avatar"
-import MemberInviteModal from "@/app/(pages)/(Main)/app/settings/workspace/_components/MemberInviteModal"
 
-const MemberAction = React.lazy(() => import('./member-action'))
+const MemberAction = React.lazy(() => import("./member-action"))
 
 const ManageWorkspaceMembers = () => {
   const { data: workspaceMembers, isLoading } =
     api.workspace.getMembersWithRole.useQuery(undefined, {})
-
   return (
     <Card className="relative overflow-hidden shadow-none">
       <CardHeader className=" border-b">
@@ -63,8 +62,6 @@ const ManageWorkspaceMembers = () => {
                 <MemberCard key={member.memberId} member={member} />
               ))}
         </>
-
-      
       </CardContent>
     </Card>
   )
@@ -107,8 +104,8 @@ function MemberCard({ member }: MemberCardProps) {
         </div>
         <Separator className="my-2  sm:hidden" />
         <div>
-          <React.Suspense fallback={<Skeleton className="h-8 w-8" /> }>
-          <MemberAction member={member} key={member.memberId} />
+          <React.Suspense fallback={<Skeleton className="h-8 w-8" />}>
+            <MemberAction member={member} key={member.memberId} />
           </React.Suspense>
         </div>
       </CardContent>

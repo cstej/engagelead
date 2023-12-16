@@ -66,7 +66,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(
           buttonVariants({ variant, size, className }),
-          "disabled:pointer-events-auto disabled:!cursor-not-allowed disabled:border disabled:bg-primary-foreground disabled:text-primary disabled:opacity-75 disabled:shadow-none","de transition-[width] "
+          "transition-all duration-300 ease-in-out",
+          "disabled:pointer-events-auto disabled:!cursor-not-allowed disabled:border disabled:bg-primary-foreground disabled:text-primary disabled:opacity-75 disabled:shadow-none"
         )}
         ref={ref}
         disabled={isLoading}

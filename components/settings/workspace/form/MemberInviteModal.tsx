@@ -32,10 +32,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import { inviteMember } from "../../actions"
+import { inviteMember } from "../../../../app/(pages)/(Main)/app/settings/actions"
 import { toast } from "sonner"
 
 type Props = {

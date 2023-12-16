@@ -40,7 +40,8 @@ type Props = {
 export default function EditWorkspaceProfile() {
   const form = useForm<FormData>({
     resolver: zodResolver(formDataSchema),
-  })
+  },)
+
 
   //Handle Form Submit
   async function onSubmit(value: FormData) {

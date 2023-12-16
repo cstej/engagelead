@@ -11,7 +11,7 @@ import { prisma } from "./prisma"
 
 declare module "next-auth" {
   interface User
-    extends Omit<UserModel, "password" | "createdAt" | "updatedAt"> {}
+    extends Omit<UserModel, "password" | "createdAt" | "updatedAt" | "about"> {}
 }
 
 export const authOptions: NextAuthOptions = {

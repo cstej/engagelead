@@ -37,10 +37,9 @@ export default withAuth(
       }
 
       if (isDashboardPage) {
-
+        // If the user is authenticated and is trying to access the dashboard, check if the workspace information is available.
 
         const workspace = cookies().has("workspace") ? cookies().get("workspace")?.value : null
-
         if (!workspace) {
           // If workspace information is missing or empty, fetch it.
 
@@ -55,7 +54,6 @@ export default withAuth(
               },
             }
           )
-
           if(res.status === 404){
             return NextResponse.redirect(new URL("/workspace", req.url))
           }

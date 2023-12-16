@@ -12,7 +12,7 @@ const Setting = () => {
 
   return (
     <div>
-      <ul className="flex flex-col gap-1 pr-4">
+      {/* <ul className="flex flex-col gap-1 pr-4">
         {items.map((item, index) => {
           return (
             item.href && (
@@ -43,7 +43,7 @@ const Setting = () => {
             )
           )
         })}
-      </ul>
+      </ul> */}
     </div>
   )
 }

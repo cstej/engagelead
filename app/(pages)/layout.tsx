@@ -49,10 +49,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             inter.variable
           )}
         >
-          <NextTopLoader showSpinner={false} />
+          {/* <NextTopLoader showSpinner={false} /> */}
           <Providers>
             {children}
-            <SonnerToast position="top-center"/>
+            <SonnerToast position="bottom-right"  theme="light" closeButton/>
           </Providers>
 
           <Analytics mode="production" />
