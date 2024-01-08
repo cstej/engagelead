@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AtSign } from "lucide-react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -34,6 +35,7 @@ const formDataSchema = z.object({
   email: z.string().email(),
   about: z.string().optional(),
   image: z.string().optional(),
+  phone: z.string().length(10).optional(),
 })
 
 type FormData = z.infer<typeof formDataSchema>
@@ -48,7 +50,6 @@ export default function EditAccountProfile() {
     {
       staleTime: Infinity,
     }
-  
   )
 
   const utils = api.useUtils()
@@ -70,7 +71,7 @@ export default function EditAccountProfile() {
 
   React.useEffect(() => {
     if (isLoading === false && profileData) {
-      //@ts-ignore
+      // @ts-ignore
       form.reset(profileData!)
     }
   }, [isLoading, form, profileData])
@@ -135,11 +136,30 @@ export default function EditAccountProfile() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Email" {...field} />
+                      <Input
+                        prefix={<AtSign className="h-4 w-4" />}
+                        placeholder="Your Email"
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       This email will be displayed publicly.
                     </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="91XXXXXXXX" {...field} />
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}

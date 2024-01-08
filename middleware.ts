@@ -9,6 +9,7 @@ export default withAuth(
     try {
       const isDashboardPage = req.nextUrl.pathname.startsWith("/app")
       const token = await getToken({ req })
+  
       const isAuth = !!token
       const isAuthPage =
         req.nextUrl.pathname.startsWith("/login") ||

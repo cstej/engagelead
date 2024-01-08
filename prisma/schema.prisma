@@ -57,6 +57,7 @@ model User {
   emailVerified DateTime?
   image         String?
   about         String?
+  phone         String?
   password      String?
   accounts      Account[]
   sessions      Session[]

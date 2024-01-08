@@ -16,6 +16,7 @@ export const userRouter = createTRPCRouter({
         email: true,
         image: true,
         about: true,
+        phone: true,
       },
     })
 
@@ -28,6 +29,7 @@ export const userRouter = createTRPCRouter({
         name: z.string().min(3).max(255),
         image: z.string().optional(),
         about: z.string().optional(),
+        phone: z.string().length(10).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -40,12 +42,15 @@ export const userRouter = createTRPCRouter({
             name: input.name,
             image: input.image,
             about: input.about,
+            phone: input.phone,
           },
           select: {
             id: true,
             name: true,
             email: true,
             image: true,
+            about: true,
+            phone: true,
           },
         })
 

@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { InputRequiredHint } from "./input-required-hint"
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix" | "postfix"> {
@@ -8,10 +9,11 @@ export interface InputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, prefix, postfix, ...props }, ref) => {
+  ({ className, type,required, prefix, postfix, ...props }, ref) => {
     return (
       <>
         {prefix || postfix ? (
+          <InputRequiredHint required={required}>
           <div
             className={cn(
               "relative flex h-9 items-center overflow-hidden rounded-md border border-input shadow-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring",
@@ -37,7 +39,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               </div>
             )}
           </div>
+          </InputRequiredHint>
         ) : (
+          <InputRequiredHint required={required}>
           <input
             type={type}
             className={cn(
@@ -47,6 +51,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             {...props}
           />
+          </InputRequiredHint>
         )}
       </>
     )

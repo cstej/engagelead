@@ -150,4 +150,51 @@ export const workspaceRouter = createTRPCRouter({
 
       return data
     }),
+
+  updateWorkspaceById: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(2),
+        about: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const workspace = await ctx.prisma.workspace.update({
+          where: {
+            id: ctx.session.workspaceId,
+          },
+          data: {
+            name: input.name,
+            about: input.about,
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        })
+
+        return workspace
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: ctx.getErrorMessage(error),
+        })
+      }
+    }),
+
+  getWorkspaceById: protectedProcedure.query(async ({ ctx }) => {
+    const workspace = await ctx.prisma.workspace.findUnique({
+      where: {
+        id: ctx.session.workspaceId,
+      },
+      select: {
+        id: true,
+        name: true,
+        about: true,
+      },
+    })
+
+    return workspace
+  }),
 })
